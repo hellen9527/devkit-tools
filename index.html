@@ -413,7 +413,7 @@ input[type="checkbox"]{accent-color:var(--accent);width:15px;height:15px;cursor:
         </div>
         <div class="card">
           <div class="card-title">Live clock</div>
-          <div class="live" id="ts-live">—<span class="sub" id="ts-live-date"></span></div>
+          <div class="live"><span id="ts-live">—</span><span class="sub" id="ts-live-date"></span></div>
         </div>
       </section>
 
@@ -421,7 +421,7 @@ input[type="checkbox"]{accent-color:var(--accent);width:15px;height:15px;cursor:
       <section class="view" id="view-json">
         <div class="tool-head"><span class="prompt">~ $ devkit:</span><span class="cmd">json-format</span><span class="cursor"></span></div>
         <h1 class="tool-title">JSON Formatter</h1>
-        <p class="tool-desc">Format, minify and validate JSON. Invalid input reports the exact line and column of the problem.</p>
+        <p class="tool-desc">Format, minify and validate JSON. Numbers and key order are preserved. Invalid input shows a syntax error.</p>
         <div class="row">
           <button class="btn primary" id="json-format">Format</button>
           <button class="btn" id="json-minify">Minify</button>
@@ -446,7 +446,7 @@ input[type="checkbox"]{accent-color:var(--accent);width:15px;height:15px;cursor:
       <section class="view" id="view-url">
         <div class="tool-head"><span class="prompt">~ $ devkit:</span><span class="cmd">url-encode</span><span class="cursor"></span></div>
         <h1 class="tool-title">URL Encode / Decode</h1>
-        <p class="tool-desc">Encode or decode URL components and whole URLs. Component mode leaves structural characters like <code>:/?#</code> untouched.</p>
+        <p class="tool-desc">Encode or decode URL components and whole URLs. Whole URL mode leaves structural characters like <code>:/?#</code> untouched.</p>
         <div class="row">
           <select class="select" id="url-mode">
             <option value="component">Component (encodeURIComponent)</option>
@@ -474,7 +474,7 @@ input[type="checkbox"]{accent-color:var(--accent);width:15px;height:15px;cursor:
       <section class="view" id="view-base64">
         <div class="tool-head"><span class="prompt">~ $ devkit:</span><span class="cmd">base64</span><span class="cursor"></span></div>
         <h1 class="tool-title">Base64 Encode / Decode</h1>
-        <p class="tool-desc">Encode and decode Base64 with full UTF-8 support — Chinese, emoji and binary-safe. Optionally use URL-safe alphabet.</p>
+        <p class="tool-desc">Encode and decode Base64 with full UTF-8 support — Chinese and emoji. Text mode requires valid UTF-8 bytes. Optionally use URL-safe alphabet.</p>
         <div class="option-row">
           <input type="checkbox" id="b64-urlsafe"><label for="b64-urlsafe">URL-safe alphabet (RFC 4648 §5, no padding)</label>
         </div>
@@ -625,7 +625,7 @@ input[type="checkbox"]{accent-color:var(--accent);width:15px;height:15px;cursor:
       <section class="view" id="view-color">
         <div class="tool-head"><span class="prompt">~ $ devkit:</span><span class="cmd">color-convert</span><span class="cursor"></span></div>
         <h1 class="tool-title">Color Converter</h1>
-        <p class="tool-desc">Convert colors between HEX, RGB and HSL. Accepts #rgb, #rrggbb, #rrggbbaa, rgb()/rgba() and hsl()/hsla() formats.</p>
+        <p class="tool-desc">Convert colors between HEX, RGB and HSL. Accepts #rgb, #rgba, #rrggbb, #rrggbbaa, rgb()/rgba() and hsl()/hsla() formats.</p>
         <div class="row">
           <input class="input mono" id="color-in" placeholder="#ffb454  |  rgb(255, 180, 84)  |  hsl(32, 100%, 66%)" spellcheck="false" style="flex:1;min-width:220px">
           <input type="color" id="color-picker" value="#ffb454">
@@ -1036,51 +1036,66 @@ function tickClock(){
 }
 $('#ts-input').addEventListener('input', refreshTimestamp);
 $('#ts-unit').addEventListener('change', refreshTimestamp);
-$('#ts-now').addEventListener('click', ()=>{ $('#ts-input').value = Math.floor(Date.now()/1000); refreshTimestamp(); });
+$('#ts-now').addEventListener('click', ()=>{ $('#ts-input').value = $('#ts-unit').value==='ms' ? Date.now() : Math.floor(Date.now()/1000); refreshTimestamp(); });
 $('#ts-date').addEventListener('input', refreshDateToTs);
 setInterval(tickClock, 1000);
 
 /* ===================== Tool: JSON ===================== */
 function jsonMsg(cls, html){ const m=$('#json-msg'); m.className='msg '+(cls||''); m.innerHTML=html; }
+function jsonTokens(raw){
+  // Validate grammar, but never serialize the parsed JS numbers or object keys.
+  JSON.parse(raw);
+  return raw.match(/"(?:\\.|[^"\\])*"|-?(?:0|[1-9]\d*)(?:\.\d+)?(?:[eE][+-]?\d+)?|true|false|null|[{}\[\],:]/g) || [];
+}
+function formatJSON(raw, pretty){
+  const tokens=jsonTokens(raw);
+  if(!pretty) return tokens.join('');
+  let depth=0, out='';
+  const newline=()=> '\n'+'  '.repeat(depth);
+  tokens.forEach((t,i)=>{
+    if(t==='{' || t==='['){ out+=t; depth++; if(tokens[i+1]!=='}' && tokens[i+1]!==']') out+=newline(); }
+    else if(t==='}' || t===']'){ depth--; if(tokens[i-1]!=='{' && tokens[i-1]!=='[') out+=newline(); out+=t; }
+    else if(t===',') out+=t+newline();
+    else if(t===':') out+=': ';
+    else out+=t;
+  });
+  return out;
+}
 function jsonAction(mode){
-  const raw = $('#json-in').value;
-  const out = $('#json-out');
+  const raw=$('#json-in').value, out=$('#json-out');
   if(!raw.trim()){ jsonMsg('err','Input is empty.'); out.className='pre empty'; out.textContent=''; return; }
   try{
-    const val = JSON.parse(raw);
-    let text;
-    if(mode==='format') text = JSON.stringify(val,null,2);
-    else if(mode==='minify') text = JSON.stringify(val);
-    else text = JSON.stringify(val);
-    out.className='pre';
-    out.innerHTML = highlightJSON(text);
-    jsonMsg('ok', 'Valid JSON'+(mode==='format' ? ' · formatted with 2-space indent.' : mode==='minify' ? ' · minified.' : ' · nothing to fix.'));
+    const text=formatJSON(raw,mode==='format');
+    out.className='pre'; out.innerHTML=highlightJSON(text);
+    jsonMsg('ok','Valid JSON · '+(mode==='format'?'formatted with 2-space indent':mode==='minify'?'minified':'validated')+'. Original numbers and keys preserved.');
   }catch(e){
-    const info = jsonErrorInfo(raw, e);
-    out.className='pre empty'; out.textContent='Invalid JSON';
-    jsonMsg('err', escapeHtml(e.message)+'<br><span class="pos">line '+info.line+', column '+info.col+'</span>');
+    const info=jsonErrorInfo(raw,e);
+    out.className='pre empty'; out.textContent='';
+    jsonMsg('err',escapeHtml(e.message)+(info ? '<br><span class="pos">line '+info.line+', column '+info.col+'</span>' : ''));
   }
 }
+
 function jsonErrorInfo(raw, e){
   // extract position from V8 message like "at position 15"
   const m = String(e.message).match(/position\s+(\d+)/);
-  if(!m) return {line:1,col:1};
+  if(!m) return null;
   let pos = parseInt(m[1],10);
   const upTo = raw.slice(0,pos);
   const lines = upTo.split('\n');
   return {line:lines.length, col:lines[lines.length-1].length+1};
 }
 function highlightJSON(str){
-  let esc = escapeHtml(str);
-  esc = esc.replace(/("(\\u[a-zA-Z0-9]{4}|\\[^u]|[^\\"])*"(\s*:)?|\b(true|false)\b|\bnull\b|-?\d+(?:\.\d+)?(?:[eE][+\-]?\d+)?)/g, function(match){
-    let cls='tok-num';
-    if(match[0]==='"'){ cls = /:$/.test(match) ? 'tok-key' : 'tok-str'; }
-    else if(/true|false/.test(match)) cls='tok-bool';
-    else if(/null/.test(match)) cls='tok-null';
-    return '<span class="'+cls+'">'+match+'</span>';
-  });
-  return esc;
+  const token=/"(?:\\.|[^"\\])*"(?:\s*:)?|\b(?:true|false|null)\b|-?\d+(?:\.\d+)?(?:[eE][+-]?\d+)?/g;
+  let result='', last=0;
+  for(const m of str.matchAll(token)){
+    result+=escapeHtml(str.slice(last,m.index));
+    const t=m[0], cls=t[0]==='"' ? (/:$/.test(t)?'tok-key':'tok-str') : t==='null'?'tok-null':/^(true|false)$/.test(t)?'tok-bool':'tok-num';
+    result+='<span class="'+cls+'">'+escapeHtml(t)+'</span>';
+    last=m.index+t.length;
+  }
+  return result+escapeHtml(str.slice(last));
 }
+
 $('#json-format').addEventListener('click', ()=>jsonAction('format'));
 $('#json-minify').addEventListener('click', ()=>jsonAction('minify'));
 $('#json-validate').addEventListener('click', ()=>jsonAction('validate'));
@@ -1136,7 +1151,7 @@ function b64Decode(s){
   const bin = atob(b64);
   const bytes = new Uint8Array(bin.length);
   for(let i=0;i<bin.length;i++) bytes[i]=bin.charCodeAt(i);
-  return new TextDecoder().decode(bytes);
+  return new TextDecoder('utf-8',{fatal:true}).decode(bytes);
 }
 function b64Action(act){
   const s = $('#b64-in').value;
@@ -1303,7 +1318,6 @@ function sha512(str){
 let hashTimer=null;
 function computeHashes(){
   const s = $('#hash-in').value;
-  if(!s){ ['hash-md5','hash-sha1','hash-sha256','hash-sha512'].forEach(i=>setText(i,'—')); return; }
   try{
     setText('hash-md5', md5(s));
     setText('hash-sha1', sha1(s));
@@ -1322,13 +1336,14 @@ function b64urlDecode(s){
   const bin = atob(b);
   const bytes = new Uint8Array(bin.length);
   for(let i=0;i<bin.length;i++) bytes[i]=bin.charCodeAt(i);
-  return new TextDecoder().decode(bytes);
+  return new TextDecoder('utf-8',{fatal:true}).decode(bytes);
 }
 function prettyJSON(obj){ return JSON.stringify(obj,null,2); }
 function jwtDecode(){
   const tok = $('#jwt-in').value.trim();
   const msg = $('#jwt-msg'), claims = $('#jwt-claims');
   const hp = $('#jwt-header'), pp = $('#jwt-payload');
+  hp.textContent=''; pp.textContent=''; claims.innerHTML='';
   msg.className='msg err'; msg.textContent='';
   if(!tok){ msg.textContent='Paste a JWT to decode.'; return; }
   const parts = tok.split('.');
@@ -1338,18 +1353,26 @@ function jwtDecode(){
     const payload = JSON.parse(b64urlDecode(parts[1]));
     hp.className='pre'; hp.innerHTML = highlightJSON(JSON.stringify(header,null,2));
     pp.className='pre'; pp.innerHTML = highlightJSON(JSON.stringify(payload,null,2));
+    if(!header || typeof header!=='object' || Array.isArray(header) || !payload || typeof payload!=='object' || Array.isArray(payload)) throw new Error('Header and payload must be JSON objects.');
     const now = Math.floor(Date.now()/1000);
     const rows = [];
     const nowStr = new Date(now*1000).toISOString().replace('T',' ').slice(0,19)+' UTC';
-    const fmtClaim=(k,label)=>{ if(payload[k]===undefined) return; const d=new Date(payload[k]*1000); const rel = payload[k]<now ? 'in the past' : 'in the future'; const expires = payload[k]<now ? ' <span class="err">EXPIRED</span>' : ' <span class="ok">valid</span>'; rows.push('<div class="cron-next"><span class="when">'+label+'</span><span>'+d.toISOString().replace('T',' ').slice(0,19)+' UTC</span><span class="rel">'+rel+expires+'</span></div>'); };
+    const fmtClaim=(k,label)=>{
+      if(payload[k]===undefined) return;
+      const value=payload[k], d=new Date(value*1000);
+      if(typeof value!=='number' || !Number.isFinite(value) || isNaN(d.getTime())) throw new Error(k+' must be a valid numeric timestamp.');
+      const status=k==='exp' ? (value<=now?'EXPIRED':'not expired') : k==='nbf' ? (value>now?'NOT ACTIVE YET':'active since') : (value>now?'issued in the future':'issued');
+      rows.push('<div class="cron-next"><span class="when">'+label+'</span><span>'+d.toISOString().replace('T',' ').slice(0,19)+' UTC</span><span class="rel">'+status+'</span></div>');
+    };
     rows.push('<div class="cron-next"><span class="when">Now</span><span>'+nowStr+'</span></div>');
     fmtClaim('exp','exp (expiry)');
     fmtClaim('nbf','nbf (not before)');
     fmtClaim('iat','iat (issued at)');
     claims.innerHTML = rows.join('');
     msg.className='msg ok';
-    msg.innerHTML='Signature: <code>'+escapeHtml(parts[2].slice(0,32))+'…</code> — decoded but <b>not verified</b> (verification needs the signing secret).';
+    msg.innerHTML='Signature: <code>'+escapeHtml(parts[2].slice(0,32))+'…</code> — decoded but <b>not verified</b> (verification requires the appropriate key).';
   }catch(e){
+    hp.textContent=''; pp.textContent=''; claims.innerHTML='';
     msg.textContent='Decode failed: '+e.message;
   }
 }
@@ -1464,23 +1487,23 @@ function entEncode(s){
   const basic = s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;').replace(/'/g,'&#39;');
   if(!$('#ent-full').checked) return basic;
   // encode every non-ASCII char as numeric entity
-  return basic.replace(/[^\x00-\x7F]/g, c=>'&#'+c.codePointAt(0).toString(16).toUpperCase()+';');
+  return basic.replace(/[^\x00-\x7F]/gu, c=>'&#x'+c.codePointAt(0).toString(16).toUpperCase()+';');
 }
 function entDecode(s){
-  const named = {
-    'amp':'&','lt':'<','gt':'>','quot':'"','apos':"'",'nbsp':'\u00a0','copy':'\u00a9','reg':'\u00ae','trade':'\u2122','hellip':'\u2026','mdash':'\u2014','ndash':'\u2013','lsquo':'\u2018','rsquo':'\u2019','ldquo':'\u201c','rdquo':'\u201d','bull':'\u2022','middot':'\u00b7','deg':'\u00b0','plusmn':'\u00b1','times':'\u00d7','divide':'\u00f7','euro':'\u20ac','pound':'\u00a3','yen':'\u00a5','cent':'\u00a2','laquo':'\u00ab','raquo':'\u00bb','frac12':'\u00bd','frac14':'\u00bc','frac34':'\u00be'
-  };
-  return s.replace(/&(#x?[0-9a-fA-F]+|[a-zA-Z][a-zA-Z0-9]*);/g, (full,body)=>{
-    if(body[0]==='#'){
-      const hex = body[1]==='x'||body[1]==='X';
-      const code = parseInt(body.slice(hex?2:1), hex?16:10);
-      if(isNaN(code)||code>0x10FFFF) return full;
-      try{ return String.fromCodePoint(code); }catch(e){ return full; }
+  return s.replace(/&(?:#[xX][0-9a-fA-F]+|#[0-9]+|[a-zA-Z][a-zA-Z0-9]*);/g, full=>{
+    if(full[1]==='#'){
+      const hex=/^&#x/i.test(full), n=parseInt(full.slice(hex?3:2,-1),hex?16:10);
+      if(n===0 || n>0x10ffff || (n>=0xd800 && n<=0xdfff)) return '\uFFFD';
+      // HTML remaps these legacy numeric references to Windows-1252.
+      const legacy={128:8364,130:8218,131:402,132:8222,133:8230,134:8224,135:8225,136:710,137:8240,138:352,139:8249,140:338,142:381,145:8216,146:8217,147:8220,148:8221,149:8226,150:8211,151:8212,152:732,153:8482,154:353,155:8250,156:339,158:382,159:376};
+      return String.fromCodePoint(legacy[n] || n);
     }
-    const low = body.toLowerCase();
-    return Object.prototype.hasOwnProperty.call(named, low) ? named[low] : full;
+    // Parse only one entity in an inert textarea; never insert the input as HTML.
+    const el=document.createElement('textarea'); el.innerHTML=full;
+    return el.value;
   });
 }
+
 function entAction(act){
   const s = $('#ent-in').value;
   if(!s){ entMsg('err','Input is empty.'); return; }
@@ -1503,32 +1526,34 @@ function parseColor(s){
   if(s[0]==='#'){
     let h = s.slice(1);
     if(!/^[0-9a-f]+$/.test(h)) return null;
-    if(h.length===3) h = h.split('').map(c=>c+c).join('');
+    if(h.length===3 || h.length===4) h = h.split('').map(c=>c+c).join('');
     if(h.length===6) return {r:parseInt(h.slice(0,2),16), g:parseInt(h.slice(2,4),16), b:parseInt(h.slice(4,6),16), a:1};
     if(h.length===8) return {r:parseInt(h.slice(0,2),16), g:parseInt(h.slice(2,4),16), b:parseInt(h.slice(4,6),16), a:Math.round(parseInt(h.slice(6,8),16)/255*1000)/1000};
     return null;
   }
   if(s.startsWith('rgb')){
-    const m = s.match(/rgba?\(([^)]+)\)/);
+    const m = s.match(/^rgba?\(([^)]+)\)$/);
     if(!m) return null;
     const parts = m[1].split(/[\s,\/]+/).filter(Boolean);
+    if(parts.length<3 || parts.length>4 || parts.some(p=>!/^[-+]?(?:\d+\.?\d*|\.\d+)%?$/.test(p))) return null;
     const nums = parts.map(p=> p.endsWith('%') ? parseFloat(p)/100*255 : parseFloat(p));
     if(parts.length>=3 && nums.slice(0,3).every(x=>!isNaN(x))){
       const a = parts.length>=4 ? (parts[3].endsWith('%')?parseFloat(parts[3])/100:parseFloat(parts[3])) : 1;
-      return {r:clamp255(nums[0]), g:clamp255(nums[1]), b:clamp255(nums[2]), a:isNaN(a)?1:a};
+      return {r:clamp255(nums[0]), g:clamp255(nums[1]), b:clamp255(nums[2]), a:isNaN(a)?1:Math.max(0,Math.min(1,a))};
     }
     return null;
   }
   if(s.startsWith('hsl')){
-    const m = s.match(/hsla?\(([^)]+)\)/);
+    const m = s.match(/^hsla?\(([^)]+)\)$/);
     if(!m) return null;
     const parts = m[1].split(/[\s,\/]+/).filter(Boolean);
+    if(parts.length<3 || parts.length>4 || parts.some(p=>!/^[-+]?(?:\d+\.?\d*|\.\d+)%?$/.test(p))) return null;
     const h = parseFloat(parts[0]); 
     const sp = parseFloat(parts[1]); const l = parseFloat(parts[2]);
     if(isNaN(h)||isNaN(sp)||isNaN(l)) return null;
-    const a = parts.length>=4 ? parseFloat(parts[3]) : 1;
-    const {r,g,b} = hslToRgb(((h%360)+360)%360, sp/100, l/100);
-    return {r,g,b,a:isNaN(a)?1:a};
+    const a = parts.length>=4 ? parseFloat(parts[3])/(parts[3].endsWith('%')?100:1) : 1;
+    const {r,g,b} = hslToRgb(((h%360)+360)%360, Math.max(0,Math.min(100,sp))/100, Math.max(0,Math.min(100,l))/100);
+    return {r,g,b,a:isNaN(a)?1:Math.max(0,Math.min(1,a))};
   }
   return null;
 }
@@ -1555,14 +1580,14 @@ function rgbToHsl(r,g,b){
 }
 function hexOf(rgb){ return '#'+[rgb.r,rgb.g,rgb.b].map(x=>x.toString(16).padStart(2,'0')).join('') + (rgb.a<1 ? Math.round(rgb.a*255).toString(16).padStart(2,'0') : ''); }
 function rgbStr(rgb){ return rgb.a<1 ? 'rgba('+rgb.r+', '+rgb.g+', '+rgb.b+', '+rgb.a+')' : 'rgb('+rgb.r+', '+rgb.g+', '+rgb.b+')'; }
-function hslStr(h,s,l){ return 'hsl('+h+', '+s+'%, '+l+'%)'; }
+function hslStr(h,s,l,a=1){ return a<1 ? 'hsla('+h+', '+s+'%, '+l+'%, '+a+')' : 'hsl('+h+', '+s+'%, '+l+'%)'; }
 function colorConvert(hexInput){
   const c = parseColor(hexInput || $('#color-in').value);
   const msg = $('#color-msg');
   if(!c){ msg.className='msg err'; msg.textContent='Could not parse that color. Try #ffb454, rgb(255, 180, 84) or hsl(32, 100%, 66%).'; return; }
   msg.className='msg'; msg.textContent='';
   const hsl = rgbToHsl(c.r,c.g,c.b);
-  const hex = hexOf(c), rgb = rgbStr(c), hstr = hslStr(hsl.h,hsl.s,hsl.l);
+  const hex = hexOf(c), rgb = rgbStr(c), hstr = hslStr(hsl.h,hsl.s,hsl.l,c.a);
   setText('color-hex', hex);
   setText('color-rgb', rgb);
   setText('color-hsl', hstr);
@@ -1810,7 +1835,7 @@ $('#cron-expr').addEventListener('keydown', e=>{ if(e.key==='Enter') cronRun(); 
 /* ===================== Tool: CIDR ===================== */
 function ipToInt(ip){
   const p=ip.split('.').map(Number);
-  if(p.length!==4 || p.some(x=>isNaN(x)||x<0||x>255)) return null;
+  if(!/^(?:0|[1-9]\d{0,2})(?:\.(?:0|[1-9]\d{0,2})){3}$/.test(ip) || p.some(x=>!Number.isInteger(x)||x<0||x>255)) return null;
   return (((p[0]<<24)>>>0) + (p[1]<<16) + (p[2]<<8) + p[3])>>>0;
 }
 function intToIp(n){ return [(n>>>24)&255,(n>>>16)&255,(n>>>8)&255,n&255].join('.'); }
@@ -1820,7 +1845,7 @@ function cidrRun(){
   msg.className='msg err'; msg.textContent='';
   const slash = input.lastIndexOf('/');
   if(slash<0){ msg.textContent='Missing "/prefix". Example: 192.168.1.0/24'; return; }
-  const ip=input.slice(0,slash), prefix=parseInt(input.slice(slash+1),10);
+  const ip=input.slice(0,slash), suffix=input.slice(slash+1), prefix=/^(?:0|[1-9]\d?)$/.test(suffix)?Number(suffix):NaN;
   const base=ipToInt(ip);
   if(base===null){ msg.textContent='Invalid IPv4 address: '+ip; return; }
   if(isNaN(prefix)||prefix<0||prefix>32){ msg.textContent='Prefix must be 0–32.'; return; }
