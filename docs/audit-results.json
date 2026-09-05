@@ -1,0 +1,86 @@
+[
+  {
+    "name": "hash native reference checks",
+    "result": {
+      "checked": 28,
+      "bad": []
+    }
+  },
+  {
+    "name": "Base64 Unicode round trip",
+    "result": "中文😀"
+  },
+  {
+    "name": "Base64 binary /w==",
+    "result": "�"
+  },
+  {
+    "name": "HTML full Unicode encoding",
+    "result": "&#4E2D;&#6587;&#D83D;&#DE00;"
+  },
+  {
+    "name": "HTML full Unicode round trip",
+    "result": "\u0004ᦻ&#D83D;&#DE00;"
+  },
+  {
+    "name": "HTML named entities",
+    "result": "&eacute; &Alpha; &alpha;"
+  },
+  {
+    "name": "curl empty argument",
+    "result": [
+      "curl",
+      "-d",
+      "https://example.com"
+    ]
+  },
+  {
+    "name": "curl PowerShell query quotation",
+    "result": "curl.exe `\n  https://example.com?a=1&b=2"
+  },
+  {
+    "name": "CIDR invalid dotted IP",
+    "result": 3221225729
+  },
+  {
+    "name": "CIDR invalid prefix",
+    "result": {
+      "error": "",
+      "network": "192.168.1.0/24"
+    }
+  },
+  {
+    "name": "Cron invalid minute",
+    "result": [
+      5
+    ]
+  },
+  {
+    "name": "Cron every minute next is past",
+    "result": {
+      "first": "2026-09-05T09:48:00.000Z",
+      "now": "2026-09-05T09:48:08.082Z",
+      "isPast": true
+    }
+  },
+  {
+    "name": "Cron DOM DOW intersection",
+    "result": [
+      "2027-02-01T08:00:00.000Z",
+      "2027-03-01T08:00:00.000Z",
+      "2027-11-01T07:00:00.000Z"
+    ]
+  },
+  {
+    "name": "JWT iat nbf labels",
+    "result": "<div class=\"cron-next\"><span class=\"when\">Now</span><span>2026-09-05 09:48:08 UTC</span></div><div class=\"cron-next\"><span class=\"when\">exp (expiry)</span><span>2100-01-01 00:00:00 UTC</span><span class=\"rel\">in the future <span class=\"ok\">valid</span></span></div><div class=\"cron-next\"><span class=\"when\">nbf (not before)</span><span>1970-01-01 00:00:01 UTC</span><span class=\"rel\">in the past <span class=\"err\">EXPIRED</span></span></div><div class=\"cron-next\"><span class=\"when\">iat (issued at)</span><span>1970-01-01 00:00:01 UTC</span><span class=\"rel\">in the past <span class=\"err\">EXPIRED</span></span></div>"
+  },
+  {
+    "name": "color alpha retained in HSL",
+    "result": "hsl(0, 100%, 50%)"
+  },
+  {
+    "name": "UUID v4",
+    "result": "e4539ab8-f7df-4d59-8390-c822d181084d"
+  }
+]
