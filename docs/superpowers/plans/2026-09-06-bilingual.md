@@ -2,7 +2,7 @@
 
 User selected browser language, manual override and stable tool URLs. Execute in devkit/bilingual; do not publish a partial translation.
 
-Checkpoint 2026-09-06: step 1 complete, 27 tests pass. Step 2 started with 14 names/descriptions in content/zh-CN/metadata.json; all other localization and browser wiring remain pending. Production still has 17 English pages.
+Checkpoint 2026-09-06: steps 1–6 complete. 38 tests pass; 34 static pages generated. Spec and quality reviews approved; real-browser checks for all14 Chinese tools and both language mobile layouts complete (docs/BILINGUAL-VERIFICATION.md). Step7 deployment and search-platform checks remain. Baidu login requested, awaiting user. Production still has 17 English pages until verified deployment.
 
 1. Add tests/language.test.cjs for preferredLanguage({saved,languages}) and equivalentPath(path,language), then assets/language.js as a pure reusable module. Explicit saved en/zh wins; otherwise first nonempty browser language selects zh only for zh or zh-*; English fallback. Preserve the corresponding tool path and canonical slash policy.
 2. Add content/zh-CN tool names, descriptions, instructions, examples, limitations and UI strings. Extract English dynamic labels/errors into shared translation keys rather than replacing user output. Keep actual data (JSON tokens, codes, identifiers) unchanged.

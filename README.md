@@ -2,7 +2,7 @@
 
 Live: [tools.fategenie.com](https://tools.fategenie.com)
 
-14 free developer tools with browser-local input processing, independent static pages and no advertising or analytics scripts.
+14 free developer tools in English and Simplified Chinese, with browser-local input processing, independent static pages and no advertising or analytics scripts.
 
 ## Local development
 
@@ -27,8 +27,11 @@ The domain above is the active production address and matches the Cloudflare cus
 
 - `index.html`: source tool UI and application logic; not the deployment directory.
 - `assets/regex-worker.js`: bounded regex matching in a Web Worker.
-- `content/tools.json`: visible per-tool instructions, examples and limitations.
-- `scripts/build.cjs`: generates shared hashed assets, homepage, 14 tool pages, About, Privacy, 404, robots and sitemap.
+- `content/tools.json`: English per-tool instructions, examples and limitations.
+- `content/zh-CN/`: Chinese metadata, UI strings, HTTP descriptions and tool guides.
+- `assets/i18n.js`: translates explicit display strings without rewriting user data.
+- `assets/language.js`: homepage language selection and remembered manual preference.
+- `scripts/build.cjs`: generates shared hashed assets, 34 English/Chinese pages, a bilingual 404, robots and sitemap.
 - `tests/`: Node regression tests for transformations and static output.
 - `docs/PROGRESS.md`: resumable project checkpoint.
 
@@ -43,3 +46,7 @@ Before launch, bind the chosen custom domain, check real 404 responses and inspe
 ## Scope
 
 Five-field Cron uses the browser timezone and an eight-year search window. curl conversion handles supported literal arguments, not arbitrary shell scripts, and has not been executed on native Windows. JWT decoding does not verify signatures. Base64 is text-only. Each page states its supported behavior.
+
+## Languages
+
+English URLs remain `/json`, `/cron`, etc. Chinese equivalents live under `/zh`. Each version has its own canonical and reciprocal hreflang links. Only the root homepage automatically chooses a language from a saved preference or the primary browser language; shared tool URLs never redirect. Manual selection stores only `en` or `zh` under `devkit-language`. When storage is blocked, English remains reachable through `/?lang=en`.

@@ -997,11 +997,17 @@ document.addEventListener('keydown',e=>{
   }
 });
 
+function tr(key, ...args){
+  return window.DevKitI18n ? window.DevKitI18n.translate(key,...args) : key.replace(/\{(\d+)\}/g,(m,n)=>n<args.length?String(args[n]):m);
+}
+function uiError(error, context){ return window.DevKitI18n ? window.DevKitI18n.formatError(error,context) : String(error?.message ?? error); }
+function uiLocale(){ return window.DevKitI18n?.locale() || 'en-US'; }
+
 /* ===================== Utils ===================== */
 function flashCopy(btn, label){
   if(!btn) return;
   const orig = btn.textContent;
-  btn.textContent = label || 'Copied';
+  btn.textContent = label || tr('Copied');
   btn.classList.add('done');
   setTimeout(()=>{ btn.textContent = orig; btn.classList.remove('done'); }, 1300);
 }
@@ -1017,7 +1023,7 @@ async function copyText(text, btn){
       document.body.appendChild(ta); ta.select();
       document.execCommand('copy'); document.body.removeChild(ta);
       flashCopy(btn);
-    }catch(e2){ flashCopy(btn,'Copy failed'); }
+    }catch(e2){ flashCopy(btn,tr('Copy failed')); }
   }
 }
 function copyFrom(id){
@@ -1047,16 +1053,16 @@ function refreshTimestamp(){
   const raw = $('#ts-input').value.trim();
   if(!raw){ ['ts-local','ts-utc','ts-iso','ts-rel'].forEach(i=>setText(i,'—')); return; }
   const num = Number(raw);
-  if(isNaN(num)){ ['ts-local','ts-utc','ts-iso','ts-rel'].forEach(i=>setText(i,'Invalid input')); return; }
+  if(isNaN(num)){ ['ts-local','ts-utc','ts-iso','ts-rel'].forEach(i=>setText(i,tr('Invalid input'))); return; }
   const unit = $('#ts-unit').value;
   let ms;
   if(unit==='s') ms = num*1000;
   else if(unit==='ms') ms = num;
   else ms = raw.replace('-','').length>=13 ? num : num*1000;
   const d = new Date(ms);
-  if(isNaN(d.getTime())){ ['ts-local','ts-utc','ts-iso','ts-rel'].forEach(i=>setText(i,'Invalid')); return; }
-  setText('ts-local', d.toLocaleString('en-US',{year:'numeric',month:'2-digit',day:'2-digit',hour:'2-digit',minute:'2-digit',second:'2-digit',hour12:false}));
-  setText('ts-utc', d.toLocaleString('en-US',{timeZone:'UTC',year:'numeric',month:'2-digit',day:'2-digit',hour:'2-digit',minute:'2-digit',second:'2-digit',hour12:false})+' UTC');
+  if(isNaN(d.getTime())){ ['ts-local','ts-utc','ts-iso','ts-rel'].forEach(i=>setText(i,tr('Invalid'))); return; }
+  setText('ts-local', d.toLocaleString(uiLocale(),{year:'numeric',month:'2-digit',day:'2-digit',hour:'2-digit',minute:'2-digit',second:'2-digit',hour12:false}));
+  setText('ts-utc', d.toLocaleString(uiLocale(),{timeZone:'UTC',year:'numeric',month:'2-digit',day:'2-digit',hour:'2-digit',minute:'2-digit',second:'2-digit',hour12:false})+' UTC');
   setText('ts-iso', d.toISOString());
   setText('ts-rel', relTime(d));
 }
@@ -1065,9 +1071,9 @@ function relTime(d){
   const abs = Math.abs(diff);
   const units=[['year',31536000000],['month',2628000000],['day',86400000],['hour',3600000],['minute',60000],['second',1000]];
   for(const [n,v] of units){
-    if(abs>=v){ const q=Math.floor(abs/v); return (diff<0?'-':'+')+q+' '+n+(q>1?'s':''); }
+    if(abs>=v){ const q=Math.floor(abs/v); const fallback=(diff<0?'-':'+')+q+' '+n+(q>1?'s':''); return window.DevKitI18n ? window.DevKitI18n.relativeTime(diff,q,n,fallback) : fallback; }
   }
-  return 'now';
+  return tr('now');
 }
 function refreshDateToTs(){
   const v = $('#ts-date').value;
@@ -1080,7 +1086,7 @@ function refreshDateToTs(){
 function tickClock(){
   const now = new Date();
   setText('ts-live', Math.floor(now.getTime()/1000).toString());
-  setText('ts-live-date', now.toLocaleString('en-US',{weekday:'short',year:'numeric',month:'short',day:'2-digit',hour:'2-digit',minute:'2-digit',second:'2-digit',hour12:false}));
+  setText('ts-live-date', now.toLocaleString(uiLocale(),{weekday:'short',year:'numeric',month:'short',day:'2-digit',hour:'2-digit',minute:'2-digit',second:'2-digit',hour12:false}));
 }
 $('#ts-input')?.addEventListener('input', refreshTimestamp);
 $('#ts-unit')?.addEventListener('change', refreshTimestamp);
@@ -1111,15 +1117,15 @@ function formatJSON(raw, pretty){
 }
 function jsonAction(mode){
   const raw=$('#json-in').value, out=$('#json-out');
-  if(!raw.trim()){ jsonMsg('err','Input is empty.'); out.className='pre empty'; out.textContent=''; return; }
+  if(!raw.trim()){ jsonMsg('err',tr('Input is empty.')); out.className='pre empty'; out.textContent=''; return; }
   try{
     const text=formatJSON(raw,mode==='format');
     out.className='pre'; out.innerHTML=highlightJSON(text);
-    jsonMsg('ok','Valid JSON · '+(mode==='format'?'formatted with 2-space indent':mode==='minify'?'minified':'validated')+'. Original numbers and keys preserved.');
+    jsonMsg('ok',tr('Valid JSON · {0}. Original numbers and keys preserved.',tr(mode==='format'?'formatted with 2-space indent':mode==='minify'?'minified':'validated')));
   }catch(e){
     const info=jsonErrorInfo(raw,e);
     out.className='pre empty'; out.textContent='';
-    jsonMsg('err',escapeHtml(e.message)+(info ? '<br><span class="pos">line '+info.line+', column '+info.col+'</span>' : ''));
+    jsonMsg('err',escapeHtml(uiError(e,'json'))+(info ? '<br><span class="pos">'+tr('line {0}, column {1}',info.line,info.col)+'</span>' : ''));
   }
 }
 
@@ -1164,15 +1170,15 @@ function urlAction(act){
   const s = $('#url-in').value;
   const mode = $('#url-mode').value;
   const out = $('#url-out'); out.value='';
-  if(!s){ urlMsg('err','Input is empty.'); return; }
+  if(!s){ urlMsg('err',tr('Input is empty.')); return; }
   try{
     let res;
     if(act==='enc') res = mode==='component' ? encodeURIComponent(s) : encodeURI(s);
     else res = mode==='component' ? decodeURIComponent(s) : decodeURI(s);
     setVal('url-out', res);
-    urlMsg('ok', 'Done.');
+    urlMsg('ok', tr('Done.'));
   }catch(e){
-    urlMsg('err','Cannot decode: malformed percent-encoding or invalid escape sequence. '+escapeHtml(e.message));
+    urlMsg('err',tr('Cannot decode: malformed percent-encoding or invalid escape sequence. {0}',escapeHtml(uiError(e,'url'))));
   }
 }
 $('#url-enc')?.addEventListener('click', ()=>urlAction('enc'));
@@ -1204,13 +1210,13 @@ function b64Decode(s){
 function b64Action(act){
   setVal('b64-out','');
   const s = $('#b64-in').value;
-  if(!s){ b64Msg('err','Input is empty.'); return; }
+  if(!s){ b64Msg('err',tr('Input is empty.')); return; }
   try{
     const res = act==='enc' ? b64Encode(s) : b64Decode(s);
     setVal('b64-out', res);
-    b64Msg('ok','Done.');
+    b64Msg('ok',tr('Done.'));
   }catch(e){
-    b64Msg('err','Decode failed: input is not valid Base64-encoded UTF-8 text. '+escapeHtml(e.message));
+    b64Msg('err',tr('Decode failed: input is not valid Base64-encoded UTF-8 text. {0}',escapeHtml(uiError(e,'base64'))));
   }
 }
 $('#b64-enc')?.addEventListener('click', ()=>b64Action('enc'));
@@ -1394,9 +1400,9 @@ function jwtDecode(){
   const hp = $('#jwt-header'), pp = $('#jwt-payload');
   hp.textContent=''; pp.textContent=''; claims.innerHTML='';
   msg.className='msg err'; msg.textContent='';
-  if(!tok){ msg.textContent='Paste a JWT to decode.'; return; }
+  if(!tok){ msg.textContent=tr('Paste a JWT to decode.'); return; }
   const parts = tok.split('.');
-  if(parts.length!==3){ msg.textContent='Invalid JWT: expected 3 dot-separated segments (header.payload.signature).'; return; }
+  if(parts.length!==3){ msg.textContent=tr('Invalid JWT: expected 3 dot-separated segments (header.payload.signature).'); return; }
   try{
     const header = JSON.parse(b64urlDecode(parts[0]));
     const payload = JSON.parse(b64urlDecode(parts[1]));
@@ -1411,18 +1417,18 @@ function jwtDecode(){
       const value=payload[k], d=new Date(value*1000);
       if(typeof value!=='number' || !Number.isFinite(value) || isNaN(d.getTime())) throw new Error(k+' must be a valid numeric timestamp.');
       const status=k==='exp' ? (value<=now?'EXPIRED':'not expired') : k==='nbf' ? (value>now?'NOT ACTIVE YET':'active since') : (value>now?'issued in the future':'issued');
-      rows.push('<div class="cron-next"><span class="when">'+label+'</span><span>'+d.toISOString().replace('T',' ').slice(0,19)+' UTC</span><span class="rel">'+status+'</span></div>');
+      rows.push('<div class="cron-next"><span class="when">'+tr(label)+'</span><span>'+d.toISOString().replace('T',' ').slice(0,19)+' UTC</span><span class="rel">'+tr(status)+'</span></div>');
     };
-    rows.push('<div class="cron-next"><span class="when">Now</span><span>'+nowStr+'</span></div>');
+    rows.push('<div class="cron-next"><span class="when">'+tr('Now')+'</span><span>'+nowStr+'</span></div>');
     fmtClaim('exp','exp (expiry)');
     fmtClaim('nbf','nbf (not before)');
     fmtClaim('iat','iat (issued at)');
     claims.innerHTML = rows.join('');
     msg.className='msg ok';
-    msg.innerHTML='Signature: <code>'+escapeHtml(parts[2].slice(0,32))+'…</code> — decoded but <b>not verified</b> (verification requires the appropriate key).';
+    msg.innerHTML=tr('Signature: <code>{0}…</code> — decoded but <b>not verified</b> (verification requires the appropriate key).',escapeHtml(parts[2].slice(0,32)));
   }catch(e){
     hp.textContent=''; pp.textContent=''; claims.innerHTML='';
-    msg.textContent='Decode failed: '+e.message;
+    msg.textContent=tr('Decode failed: {0}',uiError(e,'jwt'));
   }
 }
 $('#jwt-decode')?.addEventListener('click', jwtDecode);
@@ -1432,7 +1438,7 @@ let rxWorker=null,rxTimeout=null;
 function cancelRegex(){
   if(rxWorker)rxWorker.terminate();
   rxWorker=null;clearTimeout(rxTimeout);
-  const btn=$('#rx-test');if(btn){btn.disabled=false;btn.textContent='Test';}
+  const btn=$('#rx-test');if(btn){btn.disabled=false;btn.textContent=tr('Test');}
 }
 function renderRegexResult(result,text){
   const out=$('#rx-out'),msg=$('#rx-msg'),wrap=$('#rx-matches-wrap');
@@ -1442,11 +1448,11 @@ function renderRegexResult(result,text){
     last=m.index+m.text.length;
   }
   out.innerHTML=html+escapeHtml(text.slice(last));
-  msg.className='msg ok';msg.textContent=result.matches.length+' match(es)'+(result.truncated?' · first 1,000 shown.':'.');
+  msg.className='msg ok';msg.textContent=tr('{0} match(es){1}',result.matches.length,tr(result.truncated?' · first 1,000 shown.':'.'));
   wrap.style.display=result.matches.length?'':'none';
-  $('#rx-matches').innerHTML='<thead><tr><th>Index</th><th>Match</th><th>Groups</th></tr></thead><tbody>'+result.matches.map(m=>
-    '<tr><td>'+m.index+'</td><td>'+escapeHtml(m.text || '(empty)')+'</td><td>'+m.groups.map((g,i)=>'$'+(i+1)+': '+escapeHtml(g ?? '(unmatched)')).join('<br>')+
-    Object.entries(m.named).map(([k,v])=>'<br>'+escapeHtml(k)+': '+escapeHtml(v ?? '(unmatched)')).join('')+'</td></tr>'
+  $('#rx-matches').innerHTML='<thead><tr><th>'+tr('Index')+'</th><th>'+tr('Match')+'</th><th>'+tr('Groups')+'</th></tr></thead><tbody>'+result.matches.map(m=>
+    '<tr><td>'+m.index+'</td><td>'+escapeHtml(m.text || tr('(empty)'))+'</td><td>'+m.groups.map((g,i)=>'$'+(i+1)+': '+escapeHtml(g ?? tr('(unmatched)'))).join('<br>')+
+    Object.entries(m.named).map(([k,v])=>'<br>'+escapeHtml(k)+': '+escapeHtml(v ?? tr('(unmatched)'))).join('')+'</td></tr>'
   ).join('')+'</tbody>';
 }
 function rxTest(){
@@ -1454,26 +1460,26 @@ function rxTest(){
   const pattern=$('#rx-pattern').value,flags=$('#rx-flags').value,text=$('#rx-text').value;
   const msg=$('#rx-msg');msg.className='msg err';msg.textContent='';
   $('#rx-out').textContent='';$('#rx-matches-wrap').style.display='none';$('#rx-matches').innerHTML='';
-  if(!pattern){msg.textContent='Enter a pattern first. Use (?:) for an empty expression.';return;}
+  if(!pattern){msg.textContent=tr('Enter a pattern first. Use (?:) for an empty expression.');return;}
   try{
     const worker=new Worker('/assets/regex-worker.js');rxWorker=worker;
-    $('#rx-test').disabled=true;$('#rx-test').textContent='Testing…';
-    msg.className='msg';msg.textContent='Testing in an isolated worker…';
+    $('#rx-test').disabled=true;$('#rx-test').textContent=tr('Testing…');
+    msg.className='msg';msg.textContent=tr('Testing in an isolated worker…');
     const fail=message=>{if(rxWorker!==worker)return;cancelRegex();msg.className='msg err';msg.textContent=message;};
     worker.onmessage=({data})=>{
       if(rxWorker!==worker)return;
       cancelRegex();
-      if(data.error){msg.className='msg err';msg.textContent=data.error;return;}
+      if(data.error){msg.className='msg err';msg.textContent=uiError(data.error,'regex');return;}
       renderRegexResult(data.result,text);
     };
-    worker.onerror=()=>fail('Unable to run the regex worker. Reload the page and try again.');
-    rxTimeout=setTimeout(()=>fail('Stopped after 1 second. Simplify the pattern or shorten the text.'),1000);
+    worker.onerror=()=>fail(tr('Unable to run the regex worker. Reload the page and try again.'));
+    rxTimeout=setTimeout(()=>fail(tr('Stopped after 1 second. Simplify the pattern or shorten the text.')),1000);
     worker.postMessage({pattern,flags,text});
-  }catch(e){cancelRegex();msg.textContent='This tool requires Web Workers over HTTP(S). Open the hosted site or local preview.';}
+  }catch(e){cancelRegex();msg.textContent=tr('This tool requires Web Workers over HTTP(S). Open the hosted site or local preview.');}
 }
 $('#rx-test')?.addEventListener('click',rxTest);
 ['rx-pattern','rx-flags','rx-text'].forEach(id=>$('#'+id)?.addEventListener('input',()=>{
-  cancelRegex();$('#rx-out').textContent='';$('#rx-matches-wrap').style.display='none';$('#rx-msg').textContent='Input changed. Click Test to update results.';
+  cancelRegex();$('#rx-out').textContent='';$('#rx-matches-wrap').style.display='none';$('#rx-msg').textContent=tr('Input changed. Click Test to update results.');
 }));
 
 /* ===================== Tool: UUID ===================== */
@@ -1495,7 +1501,7 @@ function uuidGen(n){
   const existing = out.value ? out.value.trimEnd() + '\n' : '';
   const arr = [];
   try{for(let i=0;i<n;i++) arr.push(uuidV4());}
-  catch(e){setText('uuid-msg',e.message);return;}
+  catch(e){setText('uuid-msg',uiError(e));return;}
   setText('uuid-msg','');
   out.value = existing + arr.join('\n');
 }
@@ -1531,11 +1537,11 @@ function entDecode(s){
 function entAction(act){
   setVal('ent-out','');
   const s = $('#ent-in').value;
-  if(!s){ entMsg('err','Input is empty.'); return; }
+  if(!s){ entMsg('err',tr('Input is empty.')); return; }
   try{
     setVal('ent-out', act==='enc' ? entEncode(s) : entDecode(s));
-    entMsg('ok','Done.');
-  }catch(e){ entMsg('err','Failed: '+escapeHtml(e.message)); }
+    entMsg('ok',tr('Done.'));
+  }catch(e){ entMsg('err',tr('Failed: {0}',escapeHtml(uiError(e)))); }
 }
 $('#ent-enc')?.addEventListener('click', ()=>entAction('enc'));
 $('#ent-dec')?.addEventListener('click', ()=>entAction('dec'));
@@ -1611,7 +1617,7 @@ function colorConvert(hexInput){
   const msg = $('#color-msg');
   ['hex','rgb','hsl'].forEach(k=>setText('color-'+k,'—'));
   $('#color-swatch').style.background='transparent';
-  if(!c){ msg.className='msg err'; msg.textContent='Could not parse that color. Try #ffb454, rgb(255, 180, 84) or hsl(32, 100%, 66%).'; return; }
+  if(!c){ msg.className='msg err'; msg.textContent=tr('Could not parse that color. Try #ffb454, rgb(255, 180, 84) or hsl(32, 100%, 66%).'); return; }
   msg.className='msg'; msg.textContent='';
   const hsl = rgbToHsl(c.r,c.g,c.b);
   const hex = hexOf(c), rgb = rgbStr(c), hstr = hslStr(hsl.h,hsl.s,hsl.l,c.a);
@@ -1714,12 +1720,12 @@ function renderCurl(toks,style){
 function curlConvert(){
   const src=$('#curl-src').value,dst=$('#curl-dst').value,input=$('#curl-in').value,msg=$('#curl-msg');
   setVal('curl-out','');msg.className='msg err';
-  if(!input.trim()){msg.textContent='Paste a curl command first.';return;}
+  if(!input.trim()){msg.textContent=tr('Paste a curl command first.');return;}
   const style=src==='auto'?detectCurlStyle(input):src;
   try{
     setVal('curl-out',renderCurl(tokenizeCurl(input,style),dst));
-    msg.className='msg ok';msg.textContent='Converted '+style+' → '+dst+'. Literal arguments only; command not executed.';
-  }catch(e){msg.textContent=e.message;}
+    msg.className='msg ok';msg.textContent=tr('Converted {0} → {1}. Literal arguments only; command not executed.',style,dst);
+  }catch(e){msg.textContent=uiError(e);}
 }
 $('#curl-convert')?.addEventListener('click', curlConvert);
 
@@ -1792,21 +1798,21 @@ function cronRun(){
   desc.textContent=''; nw.innerHTML='';
   msg.className='msg err'; msg.textContent='';
   const parts = expr.split(/\s+/);
-  if(parts.length!==5){ msg.textContent='Expected 5 fields: minute hour day-of-month month day-of-week. Got '+parts.length+'.'; return; }
+  if(parts.length!==5){ msg.textContent=tr('Expected 5 fields: minute hour day-of-month month day-of-week. Got {0}.',parts.length); return; }
   const fMin=parseCronField(parts[0],0,59);
   const fHour=parseCronField(parts[1],0,23);
   const fDom=parseCronField(parts[2],1,31);
   const fMon=parseCronField(parts[3],1,12,MONTH_NAMES);
   const fDow=parseCronField(parts[4],0,7,DOW_NAMES);
-  if(!fMin||!fHour||!fDom||!fMon||!fDow){ msg.textContent='Invalid cron field: check ranges and values.'; return; }
+  if(!fMin||!fHour||!fDom||!fMon||!fDow){ msg.textContent=tr('Invalid cron field: check ranges and values.'); return; }
   const fields={min:fMin,hour:fHour,dom:fDom,mon:fMon,dow:fDow,domStar:parts[2].startsWith('*'),dowStar:parts[4].startsWith('*')};
-  desc.textContent = cronExplain(fields);
+  desc.textContent = window.DevKitI18n ? window.DevKitI18n.cronExplain(fields,cronExplain(fields)) : cronExplain(fields);
   const next = cronNext(fields,5);
   nw.innerHTML = next.length ? next.map(d=>{
     const rel=relTime(d);
-    return '<div class="cron-next"><span class="when">'+d.toLocaleString('en-US',{weekday:'short',year:'numeric',month:'short',day:'numeric',hour:'2-digit',minute:'2-digit',hour12:false})+'</span><span class="rel">'+rel+'</span></div>';
-  }).join('') : '<div class="cron-next">No run within the search window.</div>';
-  msg.className='msg ok'; msg.textContent='Valid five-field cron · searching up to 8 years ahead.';
+    return '<div class="cron-next"><span class="when">'+d.toLocaleString(uiLocale(),{weekday:'short',year:'numeric',month:'short',day:'numeric',hour:'2-digit',minute:'2-digit',hour12:false})+'</span><span class="rel">'+rel+'</span></div>';
+  }).join('') : '<div class="cron-next">'+tr('No run within the search window.')+'</div>';
+  msg.className='msg ok'; msg.textContent=tr('Valid five-field cron · searching up to 8 years ahead.');
 }
 $('#cron-parse')?.addEventListener('click', cronRun);
 $('#cron-expr')?.addEventListener('keydown', e=>{ if(e.key==='Enter') cronRun(); });
@@ -1824,11 +1830,11 @@ function cidrRun(){
   ['net','bcast','mask','wild','first','last','hosts','total'].forEach(k=>setText('cidr-'+k,'—'));
   msg.className='msg err'; msg.textContent='';
   const slash = input.lastIndexOf('/');
-  if(slash<0){ msg.textContent='Missing "/prefix". Example: 192.168.1.0/24'; return; }
+  if(slash<0){ msg.textContent=tr('Missing "/prefix". Example: 192.168.1.0/24'); return; }
   const ip=input.slice(0,slash), suffix=input.slice(slash+1), prefix=/^(?:0|[1-9]\d?)$/.test(suffix)?Number(suffix):NaN;
   const base=ipToInt(ip);
-  if(base===null){ msg.textContent='Invalid IPv4 address: '+ip; return; }
-  if(isNaN(prefix)||prefix<0||prefix>32){ msg.textContent='Prefix must be 0–32.'; return; }
+  if(base===null){ msg.textContent=tr('Invalid IPv4 address: {0}',ip); return; }
+  if(isNaN(prefix)||prefix<0||prefix>32){ msg.textContent=tr('Prefix must be 0–32.'); return; }
   const mask = prefix===0 ? 0 : (0xffffffff << (32-prefix))>>>0;
   const net = (base & mask)>>>0;
   const wild = (~mask)>>>0;
@@ -1843,8 +1849,8 @@ function cidrRun(){
   setText('cidr-wild', intToIp(wild));
   setText('cidr-first', intToIp(first));
   setText('cidr-last', intToIp(last));
-  setText('cidr-hosts', usable.toLocaleString('en-US'));
-  setText('cidr-total', total.toLocaleString('en-US'));
+  setText('cidr-hosts', usable.toLocaleString(uiLocale()));
+  setText('cidr-total', total.toLocaleString(uiLocale()));
 }
 $('#cidr-calc')?.addEventListener('click', cidrRun);
 $('#cidr-in')?.addEventListener('keydown', e=>{ if(e.key==='Enter') cidrRun(); });
@@ -1923,17 +1929,17 @@ function renderHttp(){
   const classNames={1:'1xx · Informational',2:'2xx · Successful',3:'3xx · Redirection',4:'4xx · Client Error',5:'5xx · Server Error'};
   let shown=0;
   for(const cl of classes){
-    const items=HTTP_STATUS.filter(([c])=>httpClass(c)===cl);
+    const items=HTTP_STATUS.filter(([c])=>httpClass(c)===cl).map(([c,n,d])=>[c,n,window.DevKitI18n ? window.DevKitI18n.httpDescription(c,d) : d]);
     const filtered=items.filter(([c,n,d])=> !q || c.includes(q) || n.toLowerCase().includes(q) || d.toLowerCase().includes(q));
     if(!filtered.length) continue;
     shown+=filtered.length;
     const sec=document.createElement('div');
     sec.className='status-group';
-    sec.innerHTML='<h3><span class="code-range">'+classNames[cl]+'</span> · '+filtered.length+'</h3>';
+    sec.innerHTML='<h3><span class="code-range">'+tr(classNames[cl])+'</span> · '+filtered.length+'</h3>';
     sec.innerHTML+=filtered.map(([c,n,d])=>'<div class="status-item"><span class="status-code">'+c+'</span><span class="status-name">'+n+'</span><span class="status-desc">'+d+'</span></div>').join('');
     list.appendChild(sec);
   }
-  if(!shown) list.innerHTML='<div class="no-result">No status codes match that search.</div>';
+  if(!shown) list.innerHTML='<div class="no-result">'+tr('No status codes match that search.')+'</div>';
 }
 $('#http-search')?.addEventListener('input', renderHttp);
 

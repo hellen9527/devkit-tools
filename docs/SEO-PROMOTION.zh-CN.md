@@ -42,3 +42,33 @@ The tool processes inputs locally in the browser and needs no account. Duplicate
 - [Google多语言站点](https://developers.google.com/search/docs/specialty/international/managing-multi-regional-sites)
 - [百度站点管理](https://ziyuan.baidu.com/site/index)
 - [百度普通收录说明](https://ziyuan.baidu.com/linksubmit/index)
+
+## 第二篇草稿：curl 换个终端为什么就不能运行了？（未发布）
+
+同一条 curl 命令，直接从 Bash 粘贴到 cmd.exe 或 PowerShell，可能因为引号、空格和续行规则不同而改变参数。例如请求头 `X-Name: Jane Doe` 必须作为一个参数传递，空字符串参数也不能丢失。
+
+DevKit 的 curl 转换工具会把字面量参数转换成目标终端的写法，并明确拒绝变量展开、命令替换和管道等不支持的情况。它只生成命令，不发送网络请求。自动识别不明确时，请手动选择来源终端。
+
+适用范围：Bash/zsh、交互式 cmd.exe，以及采用标准原生参数传递的 PowerShell 7.3+。cmd 输出不适用于 .bat 文件；Windows 输出有解析器回归测试，但尚未在真实 Windows 终端验收。
+
+演示输入：`curl -H 'X-Name: Jane Doe' 'https://example.com'`
+
+工具：https://tools.fategenie.com/curl（中文页面验收后可换为 /zh/curl）
+
+## 第三篇草稿：Cron 写了星期一，为什么月初也会运行？（未发布）
+
+试一下五字段表达式 `0 9 1 * MON`。当“日”和“星期”都有限制时，常见 Unix Cron 规则采用“或”：每月 1 日或每周一的 09:00 都可能运行，并不是只在“恰好是周一的每月 1 日”运行。
+
+DevKit 会解释字段含义，并列出本地时区中接下来的最多 5 次运行时间。你可以拿计划执行日期逐项核对。它支持五字段 Cron，不支持 Quartz 的 `?`、`L`、`#`；具体任务调度平台的语法和时区设置仍应单独确认。
+
+演示输入：`0 9 1 * MON`；再与 `0 9 * * MON` 对比。
+
+工具：https://tools.fategenie.com/cron（中文页面验收后可换为 /zh/cron）
+
+## 首批推广的执行与观察
+
+- 每次分享一个具体问题及可复现样例，链接到对应工具；先选择自己已参与、允许此类分享的开发者社区。上述草稿目前均未对外发布。
+- 首批目标是拿到真实可操作反馈，记录工具、输入样例、预期结果、实际结果和设备；不以工具数量或虚假访问量作为成果。
+- 每周查看 Search Console 的查询词、页面、展现、点击及索引状态；新站数据不足时不根据零散波动大改页面。
+- 百度需要站长账号登录后才能添加/验证站点。2026-09-06 已实际打开登录页，尚未完成登录和提交；不能把公开入口可访问写成已提交。
+- 本站当前没有应用访问统计；因此不能声称已掌握站内转化率、留存或工具使用次数。先用搜索数据与明确反馈判断是否值得增加统计功能。
