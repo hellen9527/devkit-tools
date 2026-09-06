@@ -56,3 +56,13 @@ curl 适用 Bash、交互式 cmd.exe、PowerShell 7.3+ 标准原生命令参数�
 本地HTTP检查：/json=200，/json/=308到/json，未知路径及/docs/PROGRESS.md=404。Cloudflare官方wrangler deploy --dry-run成功（没有发布）。npm依赖审计0 vulnerabilities。当前默认dist是noindex预览。新预览服务器会话34077，127.0.0.1:8766。
 
 下一步：保存阶段2 Git检查点并推送开发分支；Cloudflare控制台正在Workers和Pages列表入口，尚未连接GitHub/创建项目。需要继续部署、最终域名绑定和Search Console。此前的域名偏好问题仍待回复；不影响创建noindex预览。不要宣称已经上线。
+
+## Cloudflare 连接等待确认
+
+阶段2提交 fceb72d 已推送 origin/devkit/launch-ready，工作区干净；尚未合并main。Cloudflare无已有项目，已进入 Create app → Connect GitHub。系统Chrome弹出官方GitHub App安装页（Cloudflare Workers and Pages）。已选择 Only select repositories，仅 hellen9527/devkit-tools（注意是连字符，不是用户另一个下划线仓库）。
+
+停在 Install & Authorize 按钮之前，没有授权、没有创建Cloudflare项目、没有部署或改DNS。页面权限：metadata只读；administration/checks/code/deployments/pull requests读写。浏览器工具明确要求新增安全敏感权限在操作时确认，下一条需用户允许后才能点击。将与用户确认推荐正式地址 tools.fategenie.com。不要绕过授权改用令牌或其他方式部署。
+
+下一步若用户同意：读取当前Chrome弹窗最新AX（避免旧元素编号），点击 Install & Authorize，返回Cloudflare选择仓库/分支、配置构建并部署。上线前将已验证分支合入main（先确认main没有其他新修改），或按用户选择分支部署。配置详见 docs/DEPLOY.zh-CN.md。SITE_URL必须匹配用户确认域名；预览无该值为noindex。然后自定义域名绑定、线上HTTP及工具回归、Search Console。
+
+本轮没有额度问题。当前剩余步骤需要用户授权，暂时暂停heartbeat，收到用户答复后在当前任务继续；若之后遇到额度不足再恢复heartbeat。
