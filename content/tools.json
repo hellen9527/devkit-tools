@@ -1,0 +1,72 @@
+{
+  "timestamp": {
+    "steps": ["Paste a Unix timestamp and choose seconds or milliseconds. Auto mode treats 13 or more digits as milliseconds.", "Read the UTC, ISO and local date results, or use the date field to convert a local date back to a timestamp."],
+    "example": "Input: 1704067200 (seconds)\nUTC: January 1, 2024, 00:00:00\nISO: 2024-01-01T00:00:00.000Z",
+    "note": "Unix time counts from January 1, 1970 UTC. The date picker and local result use your browser's timezone. Select the unit explicitly for historic or fractional timestamps."
+  },
+  "cron": {
+    "steps": ["Enter five fields in this order: minute, hour, day of month, month, day of week.", "Choose Parse to see the field explanation and up to five future runs in your browser's local timezone."],
+    "example": "0 9 * * MON-FRI\nRuns at 09:00 every Monday through Friday, in your local timezone.",
+    "note": "Supports lists, ranges, steps and month/weekday names. Sunday is 0 or 7. When both day fields are restricted, either may match. This is five-field cron: seconds, Quartz ?, L and # are not supported. The search covers up to eight years; daylight-saving changes affect local run times."
+  },
+  "json": {
+    "steps": ["Paste JSON or select Sample to start with an example.", "Choose Format for indentation, Minify to remove optional whitespace, or Validate to check syntax. Copy the result when ready."],
+    "example": "Input: {\"id\":9007199254740993,\"active\":true}\nFormatted:\n{\n  \"id\": 9007199254740993,\n  \"active\": true\n}",
+    "note": "Formatting preserves numeric text, key order and duplicate keys. JSON disallows comments and trailing commas. An error location is shown when the browser parser provides one. Preserving duplicate keys does not make their interpretation consistent across other applications."
+  },
+  "curl": {
+    "steps": ["Paste one curl command and explicitly select its source shell when automatic detection is ambiguous.", "Choose Bash, interactive cmd.exe or PowerShell as the target, then Convert. Review the output before using it in your terminal."],
+    "example": "Bash: curl -H 'X-Name: Jane Doe' 'https://example.com'\nPowerShell: curl.exe '-H' 'X-Name: Jane Doe' 'https://example.com'",
+    "note": "Converts literal arguments, quotes and line continuations; it does not run requests. Shell variables, command substitution and pipelines are rejected. The cmd target is for interactive use, not .bat files. PowerShell output assumes version 7.3+ with standard native argument passing. Windows outputs have parser regression coverage but have not been verified in a native Windows shell."
+  },
+  "url": {
+    "steps": ["Paste text and choose Component for a query parameter value, or Whole URL to preserve URL delimiters.", "Choose Encode or Decode, then copy the output. Swap moves the result back to the input."],
+    "example": "Component input: hello world & café\nEncoded: hello%20world%20%26%20caf%C3%A9",
+    "note": "Component mode uses encodeURIComponent/decodeURIComponent. Whole URL mode uses encodeURI/decodeURI and preserves reserved delimiters. This is percent encoding, not HTML form encoding: a plus sign is not decoded as a space."
+  },
+  "base64": {
+    "steps": ["Paste plain text to encode, or Base64 text to decode.", "Choose the URL-safe option when you need the - and _ alphabet, then copy the output."],
+    "example": "Text: Hello, world!\nBase64: SGVsbG8sIHdvcmxkIQ==",
+    "note": "This tool converts UTF-8 text. Binary content that is not valid UTF-8 is rejected during decoding. Base64 is an encoding, not encryption; it does not protect secrets."
+  },
+  "html-entity": {
+    "steps": ["Paste text containing HTML-sensitive characters or encoded entities.", "Choose Encode to escape characters, or Decode to convert entities back to text. Enable the non-ASCII option to encode Unicode characters as numeric entities."],
+    "example": "Text: <p>Café & tea</p>\nEncoded: &lt;p&gt;Café &amp; tea&lt;/p&gt;\nNumeric emoji: &#x1F600; → 😀",
+    "note": "Decoded output remains plain text in this tool. HTML escaping is context-dependent: do not treat this converter as a sanitizer for untrusted HTML, JavaScript or CSS. Named entities should include their terminating semicolon."
+  },
+  "color": {
+    "steps": ["Enter a HEX, RGB or HSL color, or choose a color from the picker.", "Select Convert to see HEX, RGB and HSL values with a swatch. Alpha values are preserved in text conversions."],
+    "example": "HEX: #ff000080\nRGB: rgba(255, 0, 0, 0.502)\nHSL: hsla(0, 100%, 50%, 0.502)",
+    "note": "Supports 3/4/6/8-digit HEX and numeric RGB/HSL forms. Color names, lab(), lch(), oklch() and color() are not supported. Byte-based HEX alpha may differ slightly from a decimal alpha due to rounding."
+  },
+  "regex": {
+    "steps": ["Enter a JavaScript regex pattern without surrounding slashes, and set flags such as g, i or u.", "Paste test text and choose Test. Inspect highlighted matches, character indices and capture groups."],
+    "example": "Pattern: (?<word>[a-z]+)\nFlags: g\nText: abc 123 def\nMatches: abc at index 0; def at index 8",
+    "note": "Uses your browser's JavaScript regex engine, not PCRE or Python syntax. Without g, only the first match is returned. Tests run in a worker and stop after one second. Results are limited to 1,000 matches; input limits are 200,000 text characters and 10,000 pattern characters."
+  },
+  "hash": {
+    "steps": ["Type or paste text. Digests update for its UTF-8 bytes.", "Copy the MD5, SHA-1, SHA-256 or SHA-512 result for comparison."],
+    "example": "Text: abc\nSHA-256: ba7816bf8f01cfea414140de5dae2223b00361a396177a9cb410ff61f20015ad",
+    "note": "Spaces and line endings change the digest. Empty text also has a digest. MD5 and SHA-1 are legacy options and should not be used for security-sensitive integrity. Plain hashes are not password storage algorithms. This tool hashes text, not uploaded files."
+  },
+  "jwt": {
+    "steps": ["Paste a three-part JWT and select Decode.", "Inspect the header, payload and registered time claims. exp is expiry, nbf is the earliest valid time, and iat is issuance."],
+    "example": "Header: {\"alg\":\"HS256\",\"typ\":\"JWT\"}\nPayload: {\"sub\":\"123\",\"iat\":1704067200}\niat describes when the token was issued; it is not an expiry time.",
+    "note": "Decoding does not verify the signature or establish that a token is trustworthy. Encrypted JWTs (JWE) are not supported. Inputs are processed locally; avoid sharing screenshots or copied tokens containing credentials."
+  },
+  "cidr": {
+    "steps": ["Enter an IPv4 address and prefix length, such as 192.168.1.10/24.", "Choose Calculate to see the network, mask, broadcast and usable address range."],
+    "example": "Input: 192.168.1.10/24\nNetwork: 192.168.1.0\nBroadcast: 192.168.1.255\nUsable hosts: 254",
+    "note": "IPv4 only, with prefix lengths from 0 through 32. /31 uses the two-address point-to-point convention, and /32 represents a single host. Actual address usability also depends on network configuration."
+  },
+  "http-status": {
+    "steps": ["Search by numeric code, status name or a keyword from its description.", "Browse the grouped results to distinguish informational responses, success, redirects, client errors and server errors."],
+    "example": "200 OK: the request succeeded.\n404 Not Found: the requested resource was not found.\n429 Too Many Requests: the server is limiting the request rate.",
+    "note": "A reference for common status codes, including some widely used extensions. Application behavior and response bodies may provide additional detail; a status code alone is not a complete diagnosis."
+  },
+  "uuid": {
+    "steps": ["Choose lowercase UUIDs or enable the Uppercase option.", "Generate one or a batch of UUIDs, then copy the output."],
+    "example": "Example v4 format: 550e8400-e29b-41d4-a716-446655440000\nFresh random values are generated each time you use the tool.",
+    "note": "Generates random version 4 UUIDs using browser cryptographic randomness. If secure randomness is unavailable, generation fails explicitly. UUIDs are identifiers, not a substitute for access control or authentication."
+  }
+}

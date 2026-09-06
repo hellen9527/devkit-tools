@@ -1,31 +1,37 @@
-✔ regex matches, groups and original indices (1.593417ms)
-✔ regex respects missing global flag and empty text (0.088875ms)
-✔ regex advances Unicode empty matches and limits output (0.239208ms)
-✔ regex rejects invalid and duplicate flags, syntax and oversized text (0.309875ms)
-✔ JSON preserves integer, exponent, duplicate keys and string tokens (12.997083ms)
-✔ HTML full Unicode encoding round trips (1.287958ms)
-✔ Base64 rejects non UTF-8 bytes instead of replacing data (1.226125ms)
-✔ all hash algorithms match native references including padding boundaries (5.635667ms)
-✔ empty hash input has a digest (1.120333ms)
-✔ JWT interprets issuance and activation separately from expiry (1.266458ms)
-✔ timestamp Now respects explicit milliseconds and clock keeps date (0.814ms)
-✔ CIDR rejects missing octets, fractions and suffix junk (1.170833ms)
-✔ CIDR valid /0 /24 /31 /32 boundaries (2.223625ms)
-✔ cron rejects malformed field grammar (1.03225ms)
-✔ cron starts strictly after now and uses DOM/DOW OR (0.944916ms)
-✔ color preserves alpha in HSL and accepts short alpha hex (1.16675ms)
-✔ curl preserves empty arguments (1.250083ms)
-✔ curl quotes PowerShell metacharacters and rejects unterminated strings (0.8975ms)
-✔ cron supports steps, leap days, Sunday aliases and clears stale output (1.356292ms)
-✔ curl rejects unsupported shell expressions and keeps literal values (1.145125ms)
-✔ curl round trips common literal arguments across supported shells (0.864667ms)
-✔ failed conversions clear old results (0.863291ms)
-✔ UUID requires secure randomness (0.749084ms)
-ℹ tests 23
+
+> devkit-tools@0.1.0 test
+> node --test tests/*.test.cjs
+
+✔ build emits independent crawlable tool pages and only public assets (14.595167ms)
+✔ preview cannot accidentally request indexing and invalid origins fail (8.768875ms)
+✔ regex matches, groups and original indices (2.045083ms)
+✔ regex respects missing global flag and empty text (0.084541ms)
+✔ regex advances Unicode empty matches and limits output (0.224334ms)
+✔ regex rejects invalid and duplicate flags, syntax and oversized text (0.124333ms)
+✔ JSON preserves integer, exponent, duplicate keys and string tokens (14.919291ms)
+✔ HTML full Unicode encoding round trips (1.32525ms)
+✔ Base64 rejects non UTF-8 bytes instead of replacing data (1.433667ms)
+✔ all hash algorithms match native references including padding boundaries (5.958209ms)
+✔ empty hash input has a digest (1.304792ms)
+✔ JWT interprets issuance and activation separately from expiry (1.659333ms)
+✔ timestamp Now respects explicit milliseconds and clock keeps date (0.926417ms)
+✔ CIDR rejects missing octets, fractions and suffix junk (1.187792ms)
+✔ CIDR valid /0 /24 /31 /32 boundaries (2.970958ms)
+✔ cron rejects malformed field grammar (1.33775ms)
+✔ cron starts strictly after now and uses DOM/DOW OR (0.977417ms)
+✔ color preserves alpha in HSL and accepts short alpha hex (1.41025ms)
+✔ curl preserves empty arguments (1.598584ms)
+✔ curl quotes PowerShell metacharacters and rejects unterminated strings (0.894541ms)
+✔ cron supports steps, leap days, Sunday aliases and clears stale output (1.566625ms)
+✔ curl rejects unsupported shell expressions and keeps literal values (1.300917ms)
+✔ curl round trips common literal arguments across supported shells (1.015875ms)
+✔ failed conversions clear old results (0.998583ms)
+✔ UUID requires secure randomness (0.87575ms)
+ℹ tests 25
 ℹ suites 0
-ℹ pass 23
+ℹ pass 25
 ℹ fail 0
 ℹ cancelled 0
 ℹ skipped 0
 ℹ todo 0
-ℹ duration_ms 107.268083
+ℹ duration_ms 117.72325

@@ -832,6 +832,7 @@ const $$ = s=>Array.from(document.querySelectorAll(s));
 /* ---------- History routing (clean /tool URLs for SEO; static-host rewrite needed).
    Falls back to #hash routing only when opened as a local file (file://). ---------- */
 const SITE_NAME = 'DevKit — Developer Toolbox';
+const STATIC_PAGE = typeof document.body?.dataset?.page === 'string';
 
 function currentRoute(){
   if(location.protocol==='file:'){
@@ -976,14 +977,14 @@ function route(){
   const r = currentRoute();
   applyRoute(TOOL_MAP[r] ? r : '');
 }
-window.addEventListener('popstate', ()=>applyRoute(currentRoute()));
-window.addEventListener('hashchange', ()=>{if(location.hash!=='#content') applyRoute(routeFromHash());});
+window.addEventListener('popstate', ()=>{if(!STATIC_PAGE) applyRoute(currentRoute());});
+window.addEventListener('hashchange', ()=>{if(!STATIC_PAGE && location.hash!=='#content') applyRoute(routeFromHash());});
 
 /* ---------- sidebar (mobile) ---------- */
 const sidebar=$('#sidebar'), scrim=$('#scrim');
 function openSidebar(){ sidebar.classList.add('open'); scrim.classList.add('show'); $('#menuBtn').setAttribute('aria-expanded','true'); sidebar.querySelector('a')?.focus(); }
 function closeSidebar(){ sidebar.classList.remove('open'); scrim.classList.remove('show'); $('#menuBtn').setAttribute('aria-expanded','false'); }
-$('#menuBtn').addEventListener('click', openSidebar);
+$('#menuBtn')?.addEventListener('click', openSidebar);
 scrim.addEventListener('click', ()=>{closeSidebar();$('#menuBtn').focus();});
 document.addEventListener('keydown',e=>{
   if(!sidebar.classList.contains('open')) return;
@@ -1030,7 +1031,7 @@ document.addEventListener('click', e=>{
   const link = e.target.closest('[data-route]');
   if(link){
     const plain = !e.ctrlKey && !e.metaKey && !e.shiftKey && !e.altKey && e.button===0;
-    if(plain){ e.preventDefault(); navigate(link.dataset.route || ''); }
+    if(plain && !STATIC_PAGE){ e.preventDefault(); navigate(link.dataset.route || ''); }
     return;
   }
   const b = e.target.closest('[data-copy]');
@@ -1081,11 +1082,11 @@ function tickClock(){
   setText('ts-live', Math.floor(now.getTime()/1000).toString());
   setText('ts-live-date', now.toLocaleString('en-US',{weekday:'short',year:'numeric',month:'short',day:'2-digit',hour:'2-digit',minute:'2-digit',second:'2-digit',hour12:false}));
 }
-$('#ts-input').addEventListener('input', refreshTimestamp);
-$('#ts-unit').addEventListener('change', refreshTimestamp);
-$('#ts-now').addEventListener('click', ()=>{ $('#ts-input').value = $('#ts-unit').value==='ms' ? Date.now() : Math.floor(Date.now()/1000); refreshTimestamp(); });
-$('#ts-date').addEventListener('input', refreshDateToTs);
-setInterval(tickClock, 1000);
+$('#ts-input')?.addEventListener('input', refreshTimestamp);
+$('#ts-unit')?.addEventListener('change', refreshTimestamp);
+$('#ts-now')?.addEventListener('click', ()=>{ $('#ts-input').value = $('#ts-unit').value==='ms' ? Date.now() : Math.floor(Date.now()/1000); refreshTimestamp(); });
+$('#ts-date')?.addEventListener('input', refreshDateToTs);
+if($('#ts-live')) setInterval(tickClock, 1000);
 
 /* ===================== Tool: JSON ===================== */
 function jsonMsg(cls, html){ const m=$('#json-msg'); m.className='msg '+(cls||''); m.innerHTML=html; }
@@ -1143,10 +1144,10 @@ function highlightJSON(str){
   return result+escapeHtml(str.slice(last));
 }
 
-$('#json-format').addEventListener('click', ()=>jsonAction('format'));
-$('#json-minify').addEventListener('click', ()=>jsonAction('minify'));
-$('#json-validate').addEventListener('click', ()=>jsonAction('validate'));
-$('#json-sample').addEventListener('click', ()=>{
+$('#json-format')?.addEventListener('click', ()=>jsonAction('format'));
+$('#json-minify')?.addEventListener('click', ()=>jsonAction('minify'));
+$('#json-validate')?.addEventListener('click', ()=>jsonAction('validate'));
+$('#json-sample')?.addEventListener('click', ()=>{
   const sample = {
     "name":"DevKit","version":"1.0.0","private":true,
     "features":["timestamp","json","url","base64","hash","jwt","regex","uuid"],
@@ -1174,9 +1175,9 @@ function urlAction(act){
     urlMsg('err','Cannot decode: malformed percent-encoding or invalid escape sequence. '+escapeHtml(e.message));
   }
 }
-$('#url-enc').addEventListener('click', ()=>urlAction('enc'));
-$('#url-dec').addEventListener('click', ()=>urlAction('dec'));
-$('#url-swap').addEventListener('click', ()=>{
+$('#url-enc')?.addEventListener('click', ()=>urlAction('enc'));
+$('#url-dec')?.addEventListener('click', ()=>urlAction('dec'));
+$('#url-swap')?.addEventListener('click', ()=>{
   const a=$('#url-in').value; $('#url-in').value=$('#url-out').value; setVal('url-out',a);
 });
 
@@ -1212,9 +1213,9 @@ function b64Action(act){
     b64Msg('err','Decode failed: input is not valid Base64-encoded UTF-8 text. '+escapeHtml(e.message));
   }
 }
-$('#b64-enc').addEventListener('click', ()=>b64Action('enc'));
-$('#b64-dec').addEventListener('click', ()=>b64Action('dec'));
-$('#b64-swap').addEventListener('click', ()=>{
+$('#b64-enc')?.addEventListener('click', ()=>b64Action('enc'));
+$('#b64-dec')?.addEventListener('click', ()=>b64Action('dec'));
+$('#b64-swap')?.addEventListener('click', ()=>{
   const a=$('#b64-in').value; $('#b64-in').value=$('#b64-out').value; setVal('b64-out',a);
 });
 
@@ -1373,7 +1374,7 @@ function computeHashes(){
     setText('hash-sha512', sha512(s));
   }catch(e){}
 }
-$('#hash-in').addEventListener('input', ()=>{
+$('#hash-in')?.addEventListener('input', ()=>{
   clearTimeout(hashTimer); hashTimer=setTimeout(computeHashes, 180);
 });
 
@@ -1424,7 +1425,7 @@ function jwtDecode(){
     msg.textContent='Decode failed: '+e.message;
   }
 }
-$('#jwt-decode').addEventListener('click', jwtDecode);
+$('#jwt-decode')?.addEventListener('click', jwtDecode);
 
 /* ===================== Tool: Regex ===================== */
 let rxWorker=null,rxTimeout=null;
@@ -1470,8 +1471,8 @@ function rxTest(){
     worker.postMessage({pattern,flags,text});
   }catch(e){cancelRegex();msg.textContent='This tool requires Web Workers over HTTP(S). Open the hosted site or local preview.';}
 }
-$('#rx-test').addEventListener('click',rxTest);
-['rx-pattern','rx-flags','rx-text'].forEach(id=>$('#'+id).addEventListener('input',()=>{
+$('#rx-test')?.addEventListener('click',rxTest);
+['rx-pattern','rx-flags','rx-text'].forEach(id=>$('#'+id)?.addEventListener('input',()=>{
   cancelRegex();$('#rx-out').textContent='';$('#rx-matches-wrap').style.display='none';$('#rx-msg').textContent='Input changed. Click Test to update results.';
 }));
 
@@ -1498,11 +1499,11 @@ function uuidGen(n){
   setText('uuid-msg','');
   out.value = existing + arr.join('\n');
 }
-$('#uuid-gen1').addEventListener('click', ()=>uuidGen(1));
-$('#uuid-gen5').addEventListener('click', ()=>uuidGen(5));
-$('#uuid-gen10').addEventListener('click', ()=>uuidGen(10));
-$('#uuid-gen100').addEventListener('click', ()=>uuidGen(100));
-$('#uuid-clear').addEventListener('click', ()=>setVal('uuid-out',''));
+$('#uuid-gen1')?.addEventListener('click', ()=>uuidGen(1));
+$('#uuid-gen5')?.addEventListener('click', ()=>uuidGen(5));
+$('#uuid-gen10')?.addEventListener('click', ()=>uuidGen(10));
+$('#uuid-gen100')?.addEventListener('click', ()=>uuidGen(100));
+$('#uuid-clear')?.addEventListener('click', ()=>setVal('uuid-out',''));
 
 /* ===================== Tool: HTML Entities ===================== */
 function entMsg(cls,html){ const m=$('#ent-msg'); m.className='msg '+(cls||''); m.innerHTML=html; }
@@ -1536,9 +1537,9 @@ function entAction(act){
     entMsg('ok','Done.');
   }catch(e){ entMsg('err','Failed: '+escapeHtml(e.message)); }
 }
-$('#ent-enc').addEventListener('click', ()=>entAction('enc'));
-$('#ent-dec').addEventListener('click', ()=>entAction('dec'));
-$('#ent-swap').addEventListener('click', ()=>{
+$('#ent-enc')?.addEventListener('click', ()=>entAction('enc'));
+$('#ent-dec')?.addEventListener('click', ()=>entAction('dec'));
+$('#ent-swap')?.addEventListener('click', ()=>{
   const a=$('#ent-in').value; $('#ent-in').value=$('#ent-out').value; setVal('ent-out',a);
 });
 
@@ -1621,9 +1622,9 @@ function colorConvert(hexInput){
   $('#color-picker').value = '#'+[c.r,c.g,c.b].map(x=>x.toString(16).padStart(2,'0')).join('');
   $('#color-in').value = hex;
 }
-$('#color-convert').addEventListener('click', ()=>colorConvert());
-$('#color-in').addEventListener('keydown', e=>{ if(e.key==='Enter') colorConvert(); });
-$('#color-picker').addEventListener('input', e=>colorConvert(e.target.value));
+$('#color-convert')?.addEventListener('click', ()=>colorConvert());
+$('#color-in')?.addEventListener('keydown', e=>{ if(e.key==='Enter') colorConvert(); });
+$('#color-picker')?.addEventListener('input', e=>colorConvert(e.target.value));
 
 /* ===================== Tool: curl converter ===================== */
 function curlMsg(cls,html){ const m=$('#curl-msg'); m.className='msg '+(cls||''); m.innerHTML=html; }
@@ -1720,7 +1721,7 @@ function curlConvert(){
     msg.className='msg ok';msg.textContent='Converted '+style+' → '+dst+'. Literal arguments only; command not executed.';
   }catch(e){msg.textContent=e.message;}
 }
-$('#curl-convert').addEventListener('click', curlConvert);
+$('#curl-convert')?.addEventListener('click', curlConvert);
 
 /* ===================== Tool: Cron ===================== */
 const MONTH_NAMES={jan:1,feb:2,mar:3,apr:4,may:5,jun:6,jul:7,aug:8,sep:9,oct:10,nov:11,dec:12};
@@ -1807,8 +1808,8 @@ function cronRun(){
   }).join('') : '<div class="cron-next">No run within the search window.</div>';
   msg.className='msg ok'; msg.textContent='Valid five-field cron · searching up to 8 years ahead.';
 }
-$('#cron-parse').addEventListener('click', cronRun);
-$('#cron-expr').addEventListener('keydown', e=>{ if(e.key==='Enter') cronRun(); });
+$('#cron-parse')?.addEventListener('click', cronRun);
+$('#cron-expr')?.addEventListener('keydown', e=>{ if(e.key==='Enter') cronRun(); });
 
 /* ===================== Tool: CIDR ===================== */
 function ipToInt(ip){
@@ -1845,8 +1846,8 @@ function cidrRun(){
   setText('cidr-hosts', usable.toLocaleString('en-US'));
   setText('cidr-total', total.toLocaleString('en-US'));
 }
-$('#cidr-calc').addEventListener('click', cidrRun);
-$('#cidr-in').addEventListener('keydown', e=>{ if(e.key==='Enter') cidrRun(); });
+$('#cidr-calc')?.addEventListener('click', cidrRun);
+$('#cidr-in')?.addEventListener('keydown', e=>{ if(e.key==='Enter') cidrRun(); });
 
 /* ===================== Tool: HTTP Status ===================== */
 const HTTP_STATUS = [
@@ -1934,19 +1935,17 @@ function renderHttp(){
   }
   if(!shown) list.innerHTML='<div class="no-result">No status codes match that search.</div>';
 }
-$('#http-search').addEventListener('input', renderHttp);
+$('#http-search')?.addEventListener('input', renderHttp);
 
 /* ===================== Init ===================== */
 function escapeHtml(s){
   return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;').replace(/'/g,'&#39;');
 }
-$('#toolSearch').addEventListener('input', renderSearch);
-renderNav();
-renderGrid();
-renderHttp();
-tickClock();
-refreshDateToTs();
-route();
+$('#toolSearch')?.addEventListener('input', renderSearch);
+if(!STATIC_PAGE){ renderNav(); renderGrid(); route(); }
+if($('#http-search')) renderHttp();
+if($('#ts-input')){ tickClock(); refreshTimestamp(); refreshDateToTs(); }
+if(STATIC_PAGE && $('#hash-in')) computeHashes();
 </script>
 </body>
 </html>

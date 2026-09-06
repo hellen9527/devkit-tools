@@ -4,10 +4,10 @@
 
 ## 当前状态
 
-阶段 1 的已审计正确性修复和手机布局已实现。23 项 Node 回归全部通过；浏览器验证正则捕获组、一秒危险模式超时、命名及 Unicode HTML 实体不执行标签；14 个工具在 390×844 下导航可用，页面和内容无横向溢出。尚需各工具真实输入的最终浏览器冒烟，随阶段 2 成品复验。阶段 2 接下来实施。
+阶段 1 的已审计正确性修复和手机布局已实现。23 项 Node 回归全部通过；浏览器验证正则捕获组、一秒危险模式超时、命名及 Unicode HTML 实体不执行标签；14 个工具在 390×844 下导航可用，页面和内容无横向溢出。阶段2现已完成，真实浏览器操作与手机复验通过，见文末最新检查点。
 
 - [x] 修复已审计工具问题和手机布局（验证范围见上文）。
-- [ ] 独立静态页面：每工具独立 HTML、标题/描述/示例/URL，静态可爬导航，真实 404，干净 dist。
+- [x] 独立静态页面：每工具独立 HTML、标题/描述/示例/URL，静态可爬导航，真实 404，干净 dist。
 - [ ] GitHub + Cloudflare Workers Static Assets + 域名。
 - [ ] Search Console 验证、sitemap、收录检查。
 - [ ] 按真实反馈迭代，不凭空补工具或广告。
@@ -44,3 +44,15 @@ curl 适用 Bash、交互式 cmd.exe、PowerShell 7.3+ 标准原生命令参数�
 ## 自动续作
 
 已有每小时 heartbeat：devkit（DevKit 额度恢复后续作）。每次先检查额度，五小时或周剩余不足10%保持安静等待，不用重置券。每批保存本文件并提交。全部可执行工作完成或仅剩已询问用户输入时暂停自动任务。2026-09-06 04:28 UTC 额度已恢复，五小时已用0%、周已用46%。
+
+## 2026-09-06 阶段 2 完成检查点
+
+阶段1修复已经提交 c01ce2b。随后新增静态生成器 scripts/build.cjs、工具说明 content/tools.json、dist 专用预览 scripts/serve.cjs、README/部署文档、固定 Wrangler4.129.0 与 lockfile。删除旧根目录 catchall 与占位 sitemap/robots/Vercel 重写，构建时生成正式文件。
+
+25 项回归通过。生成首页+14工具+About/Privacy（17个可索引页面）及404；共享CSS/JS/Worker带内容hash。每工具一个view/h1，标题/description/canonical/OG/JSON-LD及说明示例在原始HTML里；首页导航和状态码参考在无JS时也可读。无SITE_URL则noindex，HTTPS origin校验拒绝路径/凭据/查询。
+
+浏览器真实输入验证14工具：JSON大整数9007199254740993、timestamp1704067200对应2024-01-01UTC、Cron周一至五09:00、Base64 Hello world、URL含空格/重音字符、curl Bash到PowerShell、实体éΑ😀、#ff000080透明颜色、abc四种Hash、JWT iat为issued、CIDR /24、5个UUID、正则两个捕获组、429搜索。注意Hash有防抖，需等待结果更新再读。全14工具390px宽无内容或整页横向溢出，手机菜单跨独立页跳转成功，预览错误日志为空，尺寸已恢复。
+
+本地HTTP检查：/json=200，/json/=308到/json，未知路径及/docs/PROGRESS.md=404。Cloudflare官方wrangler deploy --dry-run成功（没有发布）。npm依赖审计0 vulnerabilities。当前默认dist是noindex预览。新预览服务器会话34077，127.0.0.1:8766。
+
+下一步：保存阶段2 Git检查点并推送开发分支；Cloudflare控制台正在Workers和Pages列表入口，尚未连接GitHub/创建项目。需要继续部署、最终域名绑定和Search Console。此前的域名偏好问题仍待回复；不影响创建noindex预览。不要宣称已经上线。

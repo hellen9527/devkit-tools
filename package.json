@@ -1,0 +1,18 @@
+{
+  "name": "devkit-tools",
+  "version": "0.1.0",
+  "private": true,
+  "description": "Fourteen browser-based developer tools with static tool pages",
+  "engines": {
+    "node": ">=22"
+  },
+  "scripts": {
+    "test": "node --test tests/*.test.cjs",
+    "build": "node scripts/build.cjs",
+    "dev": "npm run build && node scripts/serve.cjs",
+    "preview": "node scripts/serve.cjs"
+  },
+  "devDependencies": {
+    "wrangler": "4.129.0"
+  }
+}
