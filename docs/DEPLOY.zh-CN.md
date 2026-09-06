@@ -2,7 +2,7 @@
 
 ## 当前事实
 
-仓库：hellen9527/devkit-tools。开发分支 devkit/launch-ready，正式分支 main。2026-09-05 登录控制台检查：fategenie.com 有效，到期 2028-03-15；未配置网站解析。建议 tools.fategenie.com；域名目标尚待用户回复。下面的地址是建议值，不代表已绑定上线。
+仓库：hellen9527/devkit-tools。正式分支 main（devkit/launch-ready 已快进合入）。正式站点 https://tools.fategenie.com 已在 Cloudflare Workers 上线并绑定域名。fategenie.com 注册有效，到期 2028-03-15。Search Console 的 fategenie.com Domain property 已通过 DNS 验证，站点地图提交成功，已发现17个页面；发现不等于已收录。下面保留部署设置供维护与恢复使用。
 
 ## 1. Cloudflare 连接 GitHub
 
@@ -12,11 +12,11 @@
 
 | 字段 | 值 |
 |---|---|
-| Production branch | 完成合并后的 main |
+| Production branch | main |
 | Root directory | 仓库根目录 |
 | Build command | npm test && npm run build |
 | Deploy command | npx wrangler deploy |
-| Build variable SITE_URL | https://tools.fategenie.com（确认后使用） |
+| Build variable SITE_URL | https://tools.fategenie.com |
 | Build Node version | 22 或更新的受支持版本 |
 | Static asset directory | wrangler.jsonc 中的 ./dist |
 
@@ -47,3 +47,12 @@
 ## 4. 维护
 
 改动先跑 npm test，再构建和浏览器检查，提交 Git；Cloudflare 按连接的分支自动部署。需要恢复时，使用已验证的 Git 提交或 Cloudflare 历史部署。未上线的本地状态和待操作事项以 PROGRESS.md 为准。
+
+
+## 本站上线验收（2026-09-06）
+
+- 正式地址：https://tools.fategenie.com。main提交自动部署已验证成功（ff6bac9，Cloudflare构建4224bd51，19秒）。
+- 17页面、规范网址、robots、sitemap和真实404通过公网检查，结果保存于live-checks.json。
+- Search Console网域所有权验证成功；sitemap状态成功、发现17页面。
+- 首页实时测试“网址可编入Google索引”，首页索引申请回执“已请求编入索引”，加入优先抓取队列。
+- 当前索引库仍显示首页尚未收录；后续查看实际收录与搜索数据，不重复提交同一网址，不把申请成功当成已经收录。
