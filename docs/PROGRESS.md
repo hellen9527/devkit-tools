@@ -8,7 +8,7 @@
 
 - [x] 修复已审计工具问题和手机布局（验证范围见上文）。
 - [x] 独立静态页面：每工具独立 HTML、标题/描述/示例/URL，静态可爬导航，真实 404，干净 dist。
-- [ ] GitHub + Cloudflare Workers Static Assets + 域名。
+- [x] GitHub + Cloudflare Workers Static Assets + 域名。
 - [ ] Search Console 验证、sitemap、收录检查。
 - [ ] 按真实反馈迭代，不凭空补工具或广告。
 
@@ -76,3 +76,16 @@ curl 适用 Bash、交互式 cmd.exe、PowerShell 7.3+ 标准原生命令参数�
 新阻塞：高级设置默认创建Cloudflare用户API令牌，没有可复用现有令牌。展开显示权限：账户设置读取；Workers脚本、KV、R2、D1、Vectorize、Queues、Workers Pipelines、Containers、Cloudchamber、AI Search编辑；Connectivity Directory读取/绑定；账户所有zone的Workers Routes编辑；用户详情/成员身份读取。超出上一轮仅GitHub仓库的授权范围，浏览器工具要求操作时确认新增权限，停在部署前，请用户确认这组Cloudflare API令牌权限，或后续准备更窄权限的令牌供用户确认。不要绕过此确认。
 
 本轮开始剩余18%，结束剩余5%；按要求存档等待恢复，不使用重置券。heartbeat仍PAUSED，因为有待用户授权。用户确认后若额度不足，恢复原heartbeat等待额度；若足够则继续部署、绑定域名、线上检查、Search Console。Cloudflare应用尚未创建，域名未绑定，网站尚未上线。
+
+## 2026-09-06 Cloudflare 首次部署启动
+
+用户明确同意上一条列出的 Cloudflare 自动部署 API 令牌权限，且继续授权 tools.fategenie.com。额度已恢复（本轮开始五小时剩余99%）。已重新检查表单，SITE_URL=https://tools.fategenie.com 字符完整；构建 npm test && npm run build，部署 npx wrangler deploy，根路径 /，非生产分支构建关闭。已点击“部署”，控制台显示正在设置存储库。下一步核对构建日志/成功状态，绑定域名、检查线上页面，再设置Google Search Console。不要重复创建项目。
+
+
+## 正式网站已上线（2026-09-06）
+
+地址 https://tools.fategenie.com。Cloudflare项目 devkit-tools，GitHub main自动构建，首次构建94d6aca5-99e2-4085-9b23-48d4cb480402通过测试/构建/资源上传。SITE_URL已在构建日志确认为正式域名，已绑定tools子域。控制台显示生产和预览workers.dev入口关闭；将相同设置和custom_domain路由写入wrangler.jsonc，避免未来部署漂移，dry-run通过。
+
+公网21项检查全部通过，见docs/live-checks.json：17个页面HTTP200、每页一个h1/正确canonical/无noindex；缺失工具及内部docs路径HTTP404；robots允许抓取并指向正式sitemap；sitemap包含17条。系统Chrome打开正式首页和Regex，输入命名捕获组模式后正确返回abc/def两个匹配及索引0/8。内置浏览器外网偶发超时，已用系统Chrome验证，不是网站不可用。
+
+正在Google Search Console新增站点，尚未验证/提交sitemap。用户明确已授权前次说明的GitHub App和Cloudflare自动构建令牌，本阶段不得重复询问同一权限。

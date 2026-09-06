@@ -1,5 +1,7 @@
 # DevKit
 
+Live: [tools.fategenie.com](https://tools.fategenie.com)
+
 14 free developer tools with browser-local input processing, independent static pages and no advertising or analytics scripts.
 
 ## Local development
@@ -19,7 +21,7 @@ SITE_URL=https://tools.fategenie.com npm run build
 npm run preview
 ```
 
-The domain above is the proposed production address and must match the final Cloudflare custom domain. An unset `SITE_URL` produces a noindex build and an empty sitemap; invalid origins fail the build. Only deploy `dist` through `wrangler.jsonc`.
+The domain above is the active production address and matches the Cloudflare custom domain. An unset `SITE_URL` produces a noindex build and an empty sitemap; invalid origins fail the build. Only deploy `dist` through `wrangler.jsonc`.
 
 ## Source layout
 
