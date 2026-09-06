@@ -1,0 +1,16 @@
+{
+  "timestamp": {"name":"Unix 时间戳转换","desc":"在秒或毫秒时间戳与本地时间、UTC 日期之间转换。"},
+  "cron": {"name":"Cron 表达式解析","desc":"校验五字段 Cron 表达式，解释规则并查看未来运行时间。"},
+  "json": {"name":"JSON 格式化","desc":"格式化、压缩和校验 JSON，保留大整数原文与键顺序。"},
+  "curl": {"name":"curl 命令转换","desc":"在 Bash、交互式 cmd.exe 和 PowerShell 之间转换 curl 字面量参数。"},
+  "url": {"name":"URL 编码与解码","desc":"对 URL 参数或完整网址进行百分号编码和解码，支持 UTF-8 文本。"},
+  "base64": {"name":"Base64 编码与解码","desc":"对 UTF-8 文本进行 Base64 编码与解码，支持 URL 安全格式。"},
+  "html-entity": {"name":"HTML 实体转换","desc":"编码 HTML 特殊字符，或将命名实体和 Unicode 数字实体解码为文本。"},
+  "color": {"name":"颜色格式转换","desc":"转换 HEX、RGB、HSL 颜色，保留透明度并预览色块。"},
+  "regex": {"name":"正则表达式测试","desc":"测试 JavaScript 正则表达式，查看匹配位置、捕获组和高亮结果。"},
+  "hash": {"name":"Hash 摘要生成","desc":"在浏览器中计算文本的 MD5、SHA-1、SHA-256 和 SHA-512 摘要。"},
+  "jwt": {"name":"JWT 解码","desc":"查看 JWT 头部、载荷和时间声明；解码不代表签名验证。"},
+  "cidr": {"name":"IPv4 CIDR 计算器","desc":"根据 IPv4 CIDR 计算网络地址、广播地址、子网掩码和可用地址范围。"},
+  "http-status": {"name":"HTTP 状态码查询","desc":"按状态码或关键词查找常见 HTTP 响应状态的含义。"},
+  "uuid": {"name":"UUID 生成器","desc":"使用浏览器安全随机数生成 v4 UUID，支持批量生成和大小写选择。"}
+}
