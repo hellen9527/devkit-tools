@@ -66,3 +66,13 @@ curl 适用 Bash、交互式 cmd.exe、PowerShell 7.3+ 标准原生命令参数�
 下一步若用户同意：读取当前Chrome弹窗最新AX（避免旧元素编号），点击 Install & Authorize，返回Cloudflare选择仓库/分支、配置构建并部署。上线前将已验证分支合入main（先确认main没有其他新修改），或按用户选择分支部署。配置详见 docs/DEPLOY.zh-CN.md。SITE_URL必须匹配用户确认域名；预览无该值为noindex。然后自定义域名绑定、线上HTTP及工具回归、Search Console。
 
 本轮没有额度问题。当前剩余步骤需要用户授权，暂时暂停heartbeat，收到用户答复后在当前任务继续；若之后遇到额度不足再恢复heartbeat。
+
+## 2026-09-06 用户授权后部署准备
+
+用户明确允许：Cloudflare仅连接 devkit-tools 仓库，并使用 tools.fategenie.com。用户亲自完成密码/授权，现位于 Cloudflare Create app 的最后配置页，项目 devkit-tools，仓库 hellen9527/devkit-tools。远程main无额外修改，已将验证版本快进合并到main并推送（8b73540）；当前本地分支main。
+
+表单构建命令已确认 npm test && npm run build，部署命令 npx wrangler deploy，路径 /；关闭非生产分支构建。尝试设置 SITE_URL=https://tools.fategenie.com，但AX未确认值，随后原生剪贴板粘贴超时，因此下次必须重新检查/填写，不能假设成功。未点击部署。
+
+新阻塞：高级设置默认创建Cloudflare用户API令牌，没有可复用现有令牌。展开显示权限：账户设置读取；Workers脚本、KV、R2、D1、Vectorize、Queues、Workers Pipelines、Containers、Cloudchamber、AI Search编辑；Connectivity Directory读取/绑定；账户所有zone的Workers Routes编辑；用户详情/成员身份读取。超出上一轮仅GitHub仓库的授权范围，浏览器工具要求操作时确认新增权限，停在部署前，请用户确认这组Cloudflare API令牌权限，或后续准备更窄权限的令牌供用户确认。不要绕过此确认。
+
+本轮开始剩余18%，结束剩余5%；按要求存档等待恢复，不使用重置券。heartbeat仍PAUSED，因为有待用户授权。用户确认后若额度不足，恢复原heartbeat等待额度；若足够则继续部署、绑定域名、线上检查、Search Console。Cloudflare应用尚未创建，域名未绑定，网站尚未上线。
