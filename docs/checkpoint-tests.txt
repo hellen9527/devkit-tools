@@ -1,118 +1,31 @@
-✔ JSON preserves integer, exponent, duplicate keys and string tokens (11.653375ms)
-✔ HTML full Unicode encoding round trips (1.227375ms)
-✔ Base64 rejects non UTF-8 bytes instead of replacing data (1.245375ms)
-✔ all hash algorithms match native references including padding boundaries (5.154459ms)
-✔ empty hash input has a digest (1.09475ms)
-✔ JWT interprets issuance and activation separately from expiry (1.173334ms)
-✔ timestamp Now respects explicit milliseconds and clock keeps date (1.432625ms)
-✔ CIDR rejects missing octets, fractions and suffix junk (1.237958ms)
-✔ CIDR valid /0 /24 /31 /32 boundaries (2.391208ms)
-✖ cron rejects malformed field grammar (1.687958ms)
-✖ cron starts strictly after now and uses DOM/DOW OR (3.760417ms)
-✔ color preserves alpha in HSL and accepts short alpha hex (1.212667ms)
-✖ curl preserves empty arguments (1.315375ms)
-✖ curl quotes PowerShell metacharacters and rejects unterminated strings (0.857166ms)
-ℹ tests 14
+✔ regex matches, groups and original indices (1.593417ms)
+✔ regex respects missing global flag and empty text (0.088875ms)
+✔ regex advances Unicode empty matches and limits output (0.239208ms)
+✔ regex rejects invalid and duplicate flags, syntax and oversized text (0.309875ms)
+✔ JSON preserves integer, exponent, duplicate keys and string tokens (12.997083ms)
+✔ HTML full Unicode encoding round trips (1.287958ms)
+✔ Base64 rejects non UTF-8 bytes instead of replacing data (1.226125ms)
+✔ all hash algorithms match native references including padding boundaries (5.635667ms)
+✔ empty hash input has a digest (1.120333ms)
+✔ JWT interprets issuance and activation separately from expiry (1.266458ms)
+✔ timestamp Now respects explicit milliseconds and clock keeps date (0.814ms)
+✔ CIDR rejects missing octets, fractions and suffix junk (1.170833ms)
+✔ CIDR valid /0 /24 /31 /32 boundaries (2.223625ms)
+✔ cron rejects malformed field grammar (1.03225ms)
+✔ cron starts strictly after now and uses DOM/DOW OR (0.944916ms)
+✔ color preserves alpha in HSL and accepts short alpha hex (1.16675ms)
+✔ curl preserves empty arguments (1.250083ms)
+✔ curl quotes PowerShell metacharacters and rejects unterminated strings (0.8975ms)
+✔ cron supports steps, leap days, Sunday aliases and clears stale output (1.356292ms)
+✔ curl rejects unsupported shell expressions and keeps literal values (1.145125ms)
+✔ curl round trips common literal arguments across supported shells (0.864667ms)
+✔ failed conversions clear old results (0.863291ms)
+✔ UUID requires secure randomness (0.749084ms)
+ℹ tests 23
 ℹ suites 0
-ℹ pass 10
-ℹ fail 4
+ℹ pass 23
+ℹ fail 0
 ℹ cancelled 0
 ℹ skipped 0
 ℹ todo 0
-ℹ duration_ms 101.973708
-
-✖ failing tests:
-
-test at tests/reliability.test.cjs:13:1
-✖ cron rejects malformed field grammar (1.687958ms)
-  AssertionError [ERR_ASSERTION]: Expected values to be strictly equal:
-  + actual - expected
-  
-  + [
-  +   5
-  + ]
-  - null
-  
-      at TestContext.<anonymous> (/Users/leerainli/programs/devkit-tools/tests/reliability.test.cjs:13:129)
-      at Test.runInAsyncScope (node:async_hooks:226:14)
-      at Test.run (node:internal/test_runner/test:1201:25)
-      at Test.processPendingSubtests (node:internal/test_runner/test:831:18)
-      at Test.postRun (node:internal/test_runner/test:1330:19)
-      at Test.run (node:internal/test_runner/test:1258:12)
-      at async Test.processPendingSubtests (node:internal/test_runner/test:831:7) {
-    generatedMessage: true,
-    code: 'ERR_ASSERTION',
-    actual: [ 5 ],
-    expected: null,
-    operator: 'strictEqual',
-    diff: 'simple'
-  }
-
-test at tests/reliability.test.cjs:14:1
-✖ cron starts strictly after now and uses DOM/DOW OR (3.760417ms)
-  AssertionError [ERR_ASSERTION]: The expression evaluated to a falsy value:
-  
-    assert.ok(first.getTime()>Date.now())
-  
-      at TestContext.<anonymous> (/Users/leerainli/programs/devkit-tools/tests/reliability.test.cjs:14:298)
-      at Test.runInAsyncScope (node:async_hooks:226:14)
-      at Test.run (node:internal/test_runner/test:1201:25)
-      at Test.processPendingSubtests (node:internal/test_runner/test:831:18)
-      at Test.postRun (node:internal/test_runner/test:1330:19)
-      at Test.run (node:internal/test_runner/test:1258:12)
-      at async Test.processPendingSubtests (node:internal/test_runner/test:831:7) {
-    generatedMessage: true,
-    code: 'ERR_ASSERTION',
-    actual: false,
-    expected: true,
-    operator: '==',
-    diff: 'simple'
-  }
-
-test at tests/reliability.test.cjs:16:1
-✖ curl preserves empty arguments (1.315375ms)
-  AssertionError [ERR_ASSERTION]: Expected values to be strictly deep-equal:
-  + actual - expected
-  
-    [
-      'curl',
-      '-d',
-  -   '',
-      'https://example.com'
-    ]
-  
-      at TestContext.<anonymous> (/Users/leerainli/programs/devkit-tools/tests/reliability.test.cjs:16:69)
-      at Test.runInAsyncScope (node:async_hooks:226:14)
-      at Test.run (node:internal/test_runner/test:1201:25)
-      at Test.processPendingSubtests (node:internal/test_runner/test:831:18)
-      at Test.postRun (node:internal/test_runner/test:1330:19)
-      at Test.run (node:internal/test_runner/test:1258:12)
-      at async Test.processPendingSubtests (node:internal/test_runner/test:831:7) {
-    generatedMessage: true,
-    code: 'ERR_ASSERTION',
-    actual: [ 'curl', '-d', 'https://example.com' ],
-    expected: [ 'curl', '-d', '', 'https://example.com' ],
-    operator: 'deepStrictEqual',
-    diff: 'simple'
-  }
-
-test at tests/reliability.test.cjs:17:1
-✖ curl quotes PowerShell metacharacters and rejects unterminated strings (0.857166ms)
-  AssertionError [ERR_ASSERTION]: The input did not match the regular expression /'https:\/\/example.com\?a=1&b=2'/. Input:
-  
-  'curl.exe `\n  https://example.com?a=1&b=2'
-  
-      at TestContext.<anonymous> (/Users/leerainli/programs/devkit-tools/tests/reliability.test.cjs:17:109)
-      at Test.runInAsyncScope (node:async_hooks:226:14)
-      at Test.run (node:internal/test_runner/test:1201:25)
-      at Test.processPendingSubtests (node:internal/test_runner/test:831:18)
-      at Test.postRun (node:internal/test_runner/test:1330:19)
-      at Test.run (node:internal/test_runner/test:1258:12)
-      at async Test.processPendingSubtests (node:internal/test_runner/test:831:7) {
-    generatedMessage: true,
-    code: 'ERR_ASSERTION',
-    actual: 'curl.exe `\n  https://example.com?a=1&b=2',
-    expected: /'https:\/\/example.com\?a=1&b=2'/,
-    operator: 'match',
-    diff: 'simple'
-  }
+ℹ duration_ms 107.268083

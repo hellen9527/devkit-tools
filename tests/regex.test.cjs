@@ -1,0 +1,7 @@
+const {test}=require('node:test'),assert=require('node:assert/strict'),fs=require('node:fs'),path=require('node:path');
+const workerPath=path.join(__dirname,'../assets/regex-worker.js');
+function matcher(){assert.ok(fs.existsSync(workerPath),'Regex worker module must exist');return require(workerPath).matchRegex;}
+test('regex matches, groups and original indices',()=>{const match=matcher();const r=match({pattern:'(?<n>\\d+)',flags:'g',text:'a12 b34'});assert.deepEqual(r.matches.map(m=>[m.index,m.text]),[[1,'12'],[5,'34']]);assert.equal(r.matches[0].named.n,'12')});
+test('regex respects missing global flag and empty text',()=>{const match=matcher();assert.equal(match({pattern:'a',flags:'',text:'aaa'}).matches.length,1);assert.equal(match({pattern:'^$',flags:'',text:''}).matches.length,1)});
+test('regex advances Unicode empty matches and limits output',()=>{const match=matcher();assert.deepEqual(match({pattern:'(?:)',flags:'gu',text:'😀a'}).matches.map(m=>m.index),[0,2,3]);const r=match({pattern:'.',flags:'g',text:'a'.repeat(1100)});assert.equal(r.matches.length,1000);assert.equal(r.truncated,true)});
+test('regex rejects invalid and duplicate flags, syntax and oversized text',()=>{const match=matcher();for(const flags of ['gg','z'])assert.throws(()=>match({pattern:'a',flags,text:'a'}));assert.throws(()=>match({pattern:'[',flags:'',text:'a'}));assert.throws(()=>match({pattern:'a',flags:'',text:'a'.repeat(200001)}));});
