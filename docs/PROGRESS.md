@@ -1,61 +1,49 @@
 # DevKit 当前进度与续作入口
 
-更新：2026-09-06。正式网站：[tools.fategenie.com](https://tools.fategenie.com)。
+更新：2026-09-06。英文：https://tools.fategenie.com/ 。中文：https://tools.fategenie.com/zh 。
 
-## 已完成
+## 当前结果
 
-- 正确性修复及手机适配；25 项 Node 回归通过，14工具完成真实浏览器输入和390px布局检查。
-- 14个独立工具页+首页+About+Privacy，共17个页面；静态标题、描述、canonical、OG、JSON-LD、说明和示例；真实404；共享哈希命名资源。
-- GitHub仓库 hellen9527/devkit-tools，正式分支main。开发分支devkit/launch-ready已快进合入。仅dist部署，不包含docs/tests/_backup。
-- Cloudflare Worker devkit-tools，上线且绑定tools.fategenie.com。main推送自动构建；构建 npm test && npm run build；部署 npx wrangler deploy；SITE_URL=https://tools.fategenie.com；非生产分支构建关闭。
-- 已将正式custom_domain路由以及workers_dev=false、preview_urls=false保存于wrangler.jsonc，dry-run验证通过。
-- Google Search Console已验证fategenie.com的Domain property，采用手动DNS TXT；验证记录必须保留。
-- 正式sitemap.xml提交成功，Google表格状态“成功”，已发现17个网页。
-- 首页URL Inspection：索引库尚未收录；实时测试明确显示“网址可编入 Google 索引”“网页可以编入索引”。这不是已经收录或获得排名的保证。
+- 初版14工具正确性及手机适配、GitHub管理、Cloudflare部署、域名、Google验证与首次sitemap提交已完成。
+- 完整中文版已上线。中英文各17页，共34页：各自首页、14工具、About、Privacy；共享算法，中文表单/按钮/错误/说明示例；62个HTTP状态描述支持中文搜索。
+- 用户已明确选择浏览器语言方案，不采用亚洲IP。仅根首页/按保存偏好或浏览器首选语言选择中文/英文；直接工具网址保持语言。手动切换记住en/zh，不保存工具输入；存储禁用也可用。英文首页的?lang=en用于避免自动切换循环。
+- 34页拥有独立标题、描述、canonical、双向en/zh-Hans/x-default hreflang及结构化数据；双语404；正式sitemap34条；未配置SITE_URL的预览仍noindex。
+- 38项Node回归通过；本地真实浏览器测试全部14中文工具、两种语言的手机布局、手动切换与偏好记忆；需求和代码质量审查通过。详情docs/BILINGUAL-VERIFICATION.md。
 
-## 当前最后操作
+## 最新发布与证据
 
-首页索引申请已成功提交，Google回执明确显示“已请求编入索引”，并已加入优先抓取队列。不要重复提交相同网址。Chrome保留Search Console网址检查标签、Cloudflare构建详情标签及线上Regex标签。先通过CUA获取最新界面，不能复用旧元素编号。
+- GitHub：git@github.com:hellen9527/devkit-tools.git；正式分支main。devkit/bilingual已快进合入，功能提交f427059。
+- main推送后公网确认已更新：34页面HTTP200、各自canonical/hreflang/lang/H1正确、没有noindex；6个脚本/样式（含Regex Worker）与最终本地构建逐字节一致；4个未知或内部路径HTTP404。
+- 完整结果：docs/bilingual-live-checks.json。旧docs/live-checks.json仅为初版17页历史证据。
+- 锁屏导致本轮未能读取Cloudflare控制台构建编号；已通过公网内容及资源一致性确认功能发布。不要写成本轮已核对控制台绿色构建。
+- 上次已确认的控制台构建是ff6bac9，build4224bd51-3373-487f-a96f-bd2a269159e4，19秒。首次build94d6aca5-99e2-4085-9b23-48d4cb480402。
 
-Cloudflare自动构建已经核对：commit ff6bac9，build 4224bd51-3373-487f-a96f-bd2a269159e4，控制台绿色成功勾选，全部阶段成功，总19秒。首次部署build94d6aca5-99e2-4085-9b23-48d4cb480402。公网21项验证详见docs/live-checks.json；17页面200/规范网址正确/无noindex，内部文档和未知路径404，sitemap17条。线上Regex命名捕获组测试返回2个匹配、索引0/8。
+## Google与百度状态
 
-## 后续工作
+- Google Search Console：sc-domain:fategenie.com已经DNS验证；必须保留Google验证TXT及原_dnsauth记录。
+- 已提交https://tools.fategenie.com/sitemap.xml，上次控制台状态成功、发现17页。现在同一公开地图已更新为34页，但本轮未读取Google重新处理后的发现数，不能声称Google已经发现34页。
+- 上次首页索引库尚未收录；实时测试明确可编入索引，首页索引申请成功加入优先抓取队列。不要重复提交同一个首页，不把申请成功当作已经收录。
+- 百度搜索资源平台已实际打开到账号登录页https://ziyuan.baidu.com/login/index?u=/site/index；目前未完成登录、站点验证或提交。
+- 已向用户请求自行百度登录；随后Mac锁屏，已请求解锁并登录。密码/验证码不发聊天、不记录。不重复询问普通权限。
 
-1. 首次建站、部署、域名验证、站点地图和首页索引申请均已完成，无未解决的上线阻塞。
-2. 等待Google实际抓取与收录，观察Search Console的Page indexing、Performance和站点地图状态。不要把“发现网页”或“可编入索引”写成“已经收录”。
-3. 有真实反馈/搜索数据后才扩充工具，不凭空加工具、不急着接广告。当前没有需要持续编码的待办。
+## 下一次继续
 
-## 验证与维护
+1. 检查git状态和额度，阅读本文件；双语开发与部署已完成，不从头重做，不重复添加中文页。
+2. 用户解锁后，通过CUA重新获取Chrome状态，不能复用旧元素编号。查看Search Console现有sitemap和索引报告；检查/zh或代表中文工具的实时可抓取性，按实际需要申请新中文入口收录，不重复申请英文首页。
+3. 用户百度登录后添加/验证tools.fategenie.com，使用账户实际开放的普通收录入口提交中文工具链接。有sitemap权限再提交地图；不要假定所有账户都有该入口。DNS或HTML验证依照实际平台要求，保留现有记录。
+4. 推广草稿在docs/SEO-PROMOTION.zh-CN.md：JSON中英文、curl/Cron中文均已准备，中文链接现已有效。尚未向外发布，未购买广告。只有用户明确要求发布时才发帖或发消息。
+5. 有真实反馈/搜索数据后才扩工具和优化文案；不凭空添加大量工具，不承诺排名和流量。
 
-- npm ci；npm test；npm run dev（默认noindex预览，127.0.0.1:8766）。
-- 正式构建：SITE_URL=https://tools.fategenie.com npm run build；npm run preview。
-- 生产发布靠main推送，Cloudflare自动执行测试与构建。不要直接上传仓库根目录。
-- 用户修改前先检查git status，保留未提交内容。完成已验证批次后提交并推送。
-- 具体部署和Google配置：docs/DEPLOY.zh-CN.md；源码说明：README.md。
-- 原始审计docs/REVIEW.zh-CN.md及audit-results.json是修复前证据，不覆盖。历史过程保存在Git提交历史，不需要重新修已完成问题。
+## 维护与已知范围
 
-## 已知支持范围
+- Node22+；npm ci；npm test；默认npm run dev为noindex预览。正式构建SITE_URL=https://tools.fategenie.com npm run build。
+- Cloudflare Worker devkit-tools，main自动部署，构建npm test && npm run build，部署npx wrangler deploy。非生产分支构建关闭。只发布dist，不上传docs/tests/备份。
+- wrangler.jsonc保留tools.fategenie.com custom_domain、workers_dev=false、preview_urls=false。不要更换现有托管方案。
+- Cron五字段、本地时区、未来8年内最多5次；curl字面量参数且Windows终端尚未实机验收；JWT不验签；CIDR仅IPv4；Base64是UTF-8文本；Regex1秒超时、1000匹配上限。详情各工具页。
+- 工具输入不存储、不上传；语言偏好是唯一应用localStorage项。网站无应用访问统计、广告脚本；不声称掌握留存或转化率。
 
-curl支持字面量参数及Bash、交互式cmd、PowerShell7.3+标准参数传递；Windows输出有参数回归但未在真实Windows执行。Cron为五字段、本地时区、最多8年内5个未来结果。Base64是UTF-8文本模式；JWT不验签；CIDR仅IPv4；Regex worker1秒超时、1000匹配上限。工具页面都说明了限制。
+## 授权与额度续作
 
-## 授权与额度
+已授权GitHub仅此仓库的Cloudflare连接、此前展开并批准的构建API令牌权限、正式域名部署、GSC验证提交及普通合法维护操作。不要重复询问相同权限；系统强制本人操作的登录或新增敏感授权仍按实际要求处理。
 
-用户已明确授权：GitHub仅devkit-tools仓库连接、Cloudflare此前展开列出的自动构建API令牌权限、tools.fategenie.com部署、Search Console验证及提交。不要重复询问这些权限。用户希望普通合法操作自主推进；系统明确要求本人操作或操作时确认的新增事项仍须遵守。
-
-不得购买域名或额度，不使用额度重置券。五小时或周额度剩余不足10%时保存进度，等待恢复。已有heartbeat id=devkit，目前PAUSED；若仍有已授权未完成事项但额度不足，可恢复原heartbeat，不能重复创建。工作完成或仅待真实搜索数据时保持暂停。最新额度恢复时五小时已用1%、周已用78%，后续以工具实时读取为准。
-
-## 新需求：中文站与推广（开发中，尚未上线）
-
-用户要求SEO推广/百度渠道及中文版，已通过选项明确选择按浏览器语言默认中英文，并保留手动切换；不再按亚洲IP。方案见docs/superpowers/specs/2026-09-06-bilingual-seo.md；推广步骤和两篇可审阅草稿见docs/SEO-PROMOTION.zh-CN.md（没有对外发布）。下一步按该方案增加真实/zh静态页、完整展示文案本地化、语言偏好、双向hreflang和34页sitemap，测试后部署。不要只翻译首页，也不要通过替换用户输出文本来翻译动态结果。现有英文站保持线上可用。
-
-本轮读取额度五小时已用63%、周已用87%；接近周剩余10%暂停阈值。开始下轮先查额度；不足则等待，不用重置券。之前“没有持续编码待办”仅指初版，新双语需求取代该状态。百度未登录/未验证/未提交，仍需后续完成平台可用入口检查。
-
-### 双语开发存档（2026-09-06，本轮更新）
-
-- 开发分支devkit/bilingual；全部14工具中文UI、动态提示、说明示例和HTTP中文搜索已实现。
-- scripts/build.cjs生成34个英文/中文静态页，双向hreflang、独立canonical、34条sitemap、双语404；assets/language.js实现首页默认语言和手动偏好。深链接保持语言，禁用存储仍可用。
-- npm test：38/38通过；需求符合性及代码质量审查通过。本地真实浏览器验收见docs/BILINGUAL-VERIFICATION.md。无需重做全部开发。
-- 下一步：提交开发分支、快进合入main、推送后验证Cloudflare自动构建与线上34页；检查Google现有站点地图与中文入口。未确认上线前不宣称已部署。
-- 百度实际打开登录页，目前未登录/验证/提交。已发异步请求请用户自行登录（不得让用户把密码或验证码发来）；用户未回复前继续独立工作。
-- 推广文档包含JSON中英草稿及curl/Cron中文草稿，均未对外发送。无广告购买或自动发帖授权。
-- 额度中断后已恢复，最新五小时已用2%、周16%；后续以实时查询为准。原有devkit续作任务ACTIVE。若最终只剩已询问的百度登录，应暂停该任务。
+不得购买域名或额度，不使用重置券。五小时或周额度剩余不足10%时存档等待。原有heartbeat id=devkit；本轮完成所有不依赖本人操作的工作后暂停，等待用户解锁/百度登录（问题已提出），不重复创建。后续额度不足且存在可执行待办时可恢复原任务。

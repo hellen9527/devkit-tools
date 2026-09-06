@@ -2,6 +2,8 @@
 
 ## 已有SEO
 
+2026-09-06：中文版已上线，公开站点地图为34页，中英文canonical/hreflang及全部页面公网验收通过。Google控制台上次发现17页，新处理状态待核对；百度尚未登录提交。
+
 每工具独立静态页面、标题/说明/示例、canonical、结构化数据；robots和站点地图；Google域名验证完成，地图处理成功并发现17页面；首页实时抓取通过，索引申请已提交。该状态说明搜索引擎可以发现网站，不代表已获得排名或流量。新的实际收录状态以Search Console为准。
 
 ## 推进顺序
@@ -23,7 +25,7 @@
 我做了一个轻量开发者工具站DevKit。JSON格式化会保留原始数字文本、键顺序和重复键，而不通过重新序列化数值来美化；可以直接用上面的样例试试。重复键虽然保留，但不同应用对它的解释仍可能不同。
 
 英文工具：https://tools.fategenie.com/json
-中文工具：上线后再加入/zh/json链接，未验收前不发布。
+中文工具：https://tools.fategenie.com/zh/json
 
 工具输入在浏览器本地处理，不需要注册。欢迎反馈不能正确处理的样例，尤其是大整数、转义字符和手机操作问题。请先删除样例中的真实密钥或个人信息。
 
@@ -53,7 +55,7 @@ DevKit 的 curl 转换工具会把字面量参数转换成目标终端的写法�
 
 演示输入：`curl -H 'X-Name: Jane Doe' 'https://example.com'`
 
-工具：https://tools.fategenie.com/curl（中文页面验收后可换为 /zh/curl）
+工具：https://tools.fategenie.com/zh/curl
 
 ## 第三篇草稿：Cron 写了星期一，为什么月初也会运行？（未发布）
 
@@ -63,7 +65,7 @@ DevKit 会解释字段含义，并列出本地时区中接下来的最多 5 次�
 
 演示输入：`0 9 1 * MON`；再与 `0 9 * * MON` 对比。
 
-工具：https://tools.fategenie.com/cron（中文页面验收后可换为 /zh/cron）
+工具：https://tools.fategenie.com/zh/cron
 
 ## 首批推广的执行与观察
 

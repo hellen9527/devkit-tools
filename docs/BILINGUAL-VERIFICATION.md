@@ -37,4 +37,4 @@ CUA浏览器访问http://127.0.0.1:8766的正式配置构建。
 
 ## 发布
 
-本文件初次写入时尚未合并main；线上结果以docs/PROGRESS.md后续记录为准。
+功能提交f427059已合入main并上线。公网34页、6个资源与构建一致、4个404路径检查通过，sitemap34条。证据docs/bilingual-live-checks.json。因Mac锁屏，本轮未重新读取Cloudflare控制台编号及Google索引报告；百度待用户登录。
