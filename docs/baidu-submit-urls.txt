@@ -1,0 +1,17 @@
+https://tools.fategenie.com/zh
+https://tools.fategenie.com/zh/timestamp
+https://tools.fategenie.com/zh/cron
+https://tools.fategenie.com/zh/json
+https://tools.fategenie.com/zh/curl
+https://tools.fategenie.com/zh/url
+https://tools.fategenie.com/zh/base64
+https://tools.fategenie.com/zh/html-entity
+https://tools.fategenie.com/zh/color
+https://tools.fategenie.com/zh/regex
+https://tools.fategenie.com/zh/hash
+https://tools.fategenie.com/zh/jwt
+https://tools.fategenie.com/zh/cidr
+https://tools.fategenie.com/zh/http-status
+https://tools.fategenie.com/zh/uuid
+https://tools.fategenie.com/zh/about
+https://tools.fategenie.com/zh/privacy
