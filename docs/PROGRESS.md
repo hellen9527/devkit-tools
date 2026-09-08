@@ -59,3 +59,9 @@
 - 百度已实际读取登录成功账号；点击添加网站弹出“完善账户信息”，必填真实姓名/职务/QQ/微信/所在地并接受隐私声明，手机邮箱已掩码绑定。已请用户直接在平台填写保存（不索取这些个人信息到聊天）。尚未进入域名验证。
 - GA4接入代码已完成初审：生产域名与已知页面校验、中英文允许/拒绝/撤回、只发固定按钮操作枚举、移除URL查询与片段及来源路径，不上传工具内容。config/analytics.json仍为空，不要用测试ID发布。48项测试通过，正式构建34页；独立代码复核已通过，发现的中文首页自动跳转重复计数问题已修复并加入集成回归。实际Google脚本、Cookie命名和实时收数仍需上线后验证。
 - Google最终协议链接：https://marketingplatform.google.com/about/analytics/terms/cn/；数据处理条款：https://privacy.google.com/businesses/processorterms/。待明确回复后，再通过CUA读取新元素编号、勾选和接受，创建Web数据流tools.fategenie.com，关闭全部增强型衡量及Signals/广告个性化，取得真实G-ID后接入。此时尚无正式账号/媒体资源/数据流ID。
+
+## 可复用部署技能（2026-09-08）
+
+- 用户要求将已完成的Cloudflare部署流程沉淀为个人skill，以后发布可复用。源码位于skills/cloudflare-github-deploy；个人安装位置~/.codex/skills/cloudflare-github-deploy，调用名$cloudflare-github-deploy。
+- 主文件只保留发布和验收短流程；references/setup.md保存首次配置、域名与排错，references/devkit.md保存本站已知参数，均不包含凭据。已有Pages或其他项目不自动迁移，不复制本站域名/权限。
+- 本轮只整理技能和保存代码，不触发正式站部署。GA4最终协议、真实ID与上线收数的等待状态仍如上所述。

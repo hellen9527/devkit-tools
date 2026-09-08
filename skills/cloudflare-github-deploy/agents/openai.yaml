@@ -1,0 +1,4 @@
+interface:
+  display_name: "Cloudflare 发布部署"
+  short_description: "复用 GitHub 到 Cloudflare 的发布、域名配置与线上验收流程"
+  default_prompt: "使用 $cloudflare-github-deploy 检查当前项目，并完成本次 Cloudflare 发布及线上验收。"
