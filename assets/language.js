@@ -31,7 +31,11 @@
     const explicit=new URLSearchParams(env.location.search).get('lang');
     if(explicit==='en'||explicit==='zh'){saved=explicit;remember(explicit);}
     const language=preferredLanguage({saved,languages:env.navigator.languages||[env.navigator.language]});
-    if(language==='zh')env.location.replace('/zh'+env.location.search+env.location.hash);
+    if(language==='zh'){
+      // Navigation is asynchronous; later defer scripts must skip this page.
+      env.DevKitLanguageRedirectPending=true;
+      env.location.replace('/zh'+env.location.search+env.location.hash);
+    }
   }
   return {preferredLanguage,equivalentPath,initialize};
 });

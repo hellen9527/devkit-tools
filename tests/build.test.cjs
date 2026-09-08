@@ -75,3 +75,28 @@ test('static localization changes authored labels without touching code, sample 
  assert.equal(translated,'<label> 输入 </label><input value="Input" placeholder="输入" aria-label="输入"><textarea placeholder="输入">Input <b>Input</b></textarea><pre>Input</pre><code>Input</code><script>const s="Input";</script><svg><title>Input</title></svg><p>左右</p>');
  assert.equal(localizeMarkup("<textarea placeholder='Input' title='Input'>Input</textarea>",{Input:'输入'}),"<textarea placeholder='输入' title='输入'>Input</textarea>");
 });
+
+test('configured production builds include static bilingual consent and privacy, but never a Google script',()=>{
+ const outDir=temp();try{
+ buildSite({outDir,siteUrl:'https://tools.fategenie.com',analyticsConfig:{measurementId:'G-TEST123'}});
+ for(const prefix of ['','zh/'])for(const route of ['',...ids,'about','privacy']){
+  const html=fs.readFileSync(path.join(outDir,prefix,route,'index.html'),'utf8');
+  assert.match(html,/data-measurement-id="G-TEST123"/);assert.match(html,/src="\/assets\/analytics\.[a-f0-9]+\.js"/);assert.doesNotMatch(html,/<script[^>]+src="https:\/\/[^\"]*google/);
+  for(const id of ['analytics-consent','analytics-preferences','analytics-allow','analytics-reject','analytics-withdraw'])assert.ok(html.includes('id="'+id+'"'));
+  assert.match(html,/id="analytics-allow" class="btn"/);assert.match(html,/id="analytics-reject" class="btn"/);
+  assert.match(html,prefix?/允许统计/:/Allow analytics/);
+ }
+ for(const prefix of ['','zh/']){const html=fs.readFileSync(path.join(outDir,prefix,'privacy/index.html'),'utf8');assert.match(html,/Google Analytics 4/);assert.match(html,/devkit-analytics-consent/);assert.match(html,/https:\/\/policies.google.com\/technologies\/partner-sites/);assert.match(html,/UTM/);assert.match(html,prefix?/会话与互动信息/:/standard session and engagement information/);assert.doesNotMatch(html,/This version does not include|当前版本未加入/)}
+ const missing=fs.readFileSync(path.join(outDir,'404.html'),'utf8');assert.doesNotMatch(missing,/analytics\.[a-f0-9]+\.js|id="analytics-/);
+ }finally{fs.rmSync(outDir,{recursive:true,force:true})}
+});
+test('unconfigured, preview and other-origin builds retain truthful disabled analytics privacy',()=>{
+ for(const [siteUrl,measurementId] of [['https://tools.fategenie.com',''],['','G-TEST123'],['https://preview.pages.dev','G-TEST123']]){
+ const outDir=temp();try{
+ buildSite({outDir,siteUrl,analyticsConfig:{measurementId}});
+ for(const route of ['index.html','json/index.html','zh/json/index.html','404.html'])assert.doesNotMatch(fs.readFileSync(path.join(outDir,route),'utf8'),/analytics\.[a-f0-9]+\.js|id="analytics-/);
+ assert.match(fs.readFileSync(path.join(outDir,'privacy/index.html'),'utf8'),/This version does not include advertising scripts or application analytics/);
+ assert.match(fs.readFileSync(path.join(outDir,'zh/privacy/index.html'),'utf8'),/当前版本未加入广告脚本或应用访问统计/);
+ }finally{fs.rmSync(outDir,{recursive:true,force:true})}}
+ const outDir=temp();try{for(const measurementId of ['G-BAD<script>','UA-1-1',123])assert.throws(()=>buildSite({outDir,analyticsConfig:{measurementId}}),/measurementId/)}finally{fs.rmSync(outDir,{recursive:true,force:true})}
+});
