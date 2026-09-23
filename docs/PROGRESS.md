@@ -53,5 +53,7 @@
 - 用户要求大JSON默认只看第一层、按需点开，避免整页过长。已从生产main的72cc1d8建立codex/json-tree独立工作区；此前GA4开发仍在devkit/analytics，未混入此次发布。
 - 格式化默认根节点展开、下一层对象/数组折叠；显示项目数量、每次最多加载100个子项、长字符串按需展开；中英文树形/文本视图、仅看第一层、固定高度独立滚动区域。
 - 复制使用完整结果，包含折叠项目，保留大整数、重复键、原始数字/字符串；输入变化或错误会清空旧结果。53项测试通过，34页构建通过，独立代码审查通过；桌面英文/390px中文视口对2万条约1.7MB JSON的完整浏览器验收通过。证据docs/JSON-TREE-VERIFICATION.md及json-tree-browser-checks.json。
-- 正在发布并等待公网版本确认；最终状态以本节后续记录为准。旧GA4真实ID和最终协议、百度资料完善事项尚未在本轮处理。
+- 功能提交cf140f2已推送main并在正式站确认生效：34页面HTTP200、canonical正确、页面引用新版资源，6个页面引用资源逐字节匹配本地构建，未知路径HTTP404。未读取本轮Cloudflare控制台构建ID，通过公网产物确认版本；证据docs/json-tree-live-checks.json。旧GA4真实ID和最终协议、百度资料完善事项尚未在本轮处理。
 - cloudflare-github-deploy个人skill已安装在~/.codex/skills；其仓库备份仍在devkit/analytics分支的skills/cloudflare-github-deploy。本轮直接复用现有Git自动部署。
+
+- 本机工作目录将切到已发布main；未启用的GA4代码及9月8日续作说明保存在devkit/analytics分支（最后提交38e5f45），后续继续统计时先读取该分支记录，不能重复创建账号。9月8日GSC已观察到地图发现34页、中文首页已收录，本文更早的17页/未收录记录是历史状态。

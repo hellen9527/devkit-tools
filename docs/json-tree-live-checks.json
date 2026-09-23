@@ -1,0 +1,250 @@
+{
+  "checkedAt": "2026-09-23T09:18:59.937698+00:00",
+  "featureCommit": "cf140f2",
+  "pages": [
+    {
+      "url": "https://tools.fategenie.com/",
+      "status": 200,
+      "canonical": true,
+      "currentAssets": true
+    },
+    {
+      "url": "https://tools.fategenie.com/timestamp",
+      "status": 200,
+      "canonical": true,
+      "currentAssets": true
+    },
+    {
+      "url": "https://tools.fategenie.com/cron",
+      "status": 200,
+      "canonical": true,
+      "currentAssets": true
+    },
+    {
+      "url": "https://tools.fategenie.com/json",
+      "status": 200,
+      "canonical": true,
+      "currentAssets": true
+    },
+    {
+      "url": "https://tools.fategenie.com/curl",
+      "status": 200,
+      "canonical": true,
+      "currentAssets": true
+    },
+    {
+      "url": "https://tools.fategenie.com/url",
+      "status": 200,
+      "canonical": true,
+      "currentAssets": true
+    },
+    {
+      "url": "https://tools.fategenie.com/base64",
+      "status": 200,
+      "canonical": true,
+      "currentAssets": true
+    },
+    {
+      "url": "https://tools.fategenie.com/html-entity",
+      "status": 200,
+      "canonical": true,
+      "currentAssets": true
+    },
+    {
+      "url": "https://tools.fategenie.com/color",
+      "status": 200,
+      "canonical": true,
+      "currentAssets": true
+    },
+    {
+      "url": "https://tools.fategenie.com/regex",
+      "status": 200,
+      "canonical": true,
+      "currentAssets": true
+    },
+    {
+      "url": "https://tools.fategenie.com/hash",
+      "status": 200,
+      "canonical": true,
+      "currentAssets": true
+    },
+    {
+      "url": "https://tools.fategenie.com/jwt",
+      "status": 200,
+      "canonical": true,
+      "currentAssets": true
+    },
+    {
+      "url": "https://tools.fategenie.com/cidr",
+      "status": 200,
+      "canonical": true,
+      "currentAssets": true
+    },
+    {
+      "url": "https://tools.fategenie.com/http-status",
+      "status": 200,
+      "canonical": true,
+      "currentAssets": true
+    },
+    {
+      "url": "https://tools.fategenie.com/uuid",
+      "status": 200,
+      "canonical": true,
+      "currentAssets": true
+    },
+    {
+      "url": "https://tools.fategenie.com/about",
+      "status": 200,
+      "canonical": true,
+      "currentAssets": true
+    },
+    {
+      "url": "https://tools.fategenie.com/privacy",
+      "status": 200,
+      "canonical": true,
+      "currentAssets": true
+    },
+    {
+      "url": "https://tools.fategenie.com/zh",
+      "status": 200,
+      "canonical": true,
+      "currentAssets": true
+    },
+    {
+      "url": "https://tools.fategenie.com/zh/timestamp",
+      "status": 200,
+      "canonical": true,
+      "currentAssets": true
+    },
+    {
+      "url": "https://tools.fategenie.com/zh/cron",
+      "status": 200,
+      "canonical": true,
+      "currentAssets": true
+    },
+    {
+      "url": "https://tools.fategenie.com/zh/json",
+      "status": 200,
+      "canonical": true,
+      "currentAssets": true
+    },
+    {
+      "url": "https://tools.fategenie.com/zh/curl",
+      "status": 200,
+      "canonical": true,
+      "currentAssets": true
+    },
+    {
+      "url": "https://tools.fategenie.com/zh/url",
+      "status": 200,
+      "canonical": true,
+      "currentAssets": true
+    },
+    {
+      "url": "https://tools.fategenie.com/zh/base64",
+      "status": 200,
+      "canonical": true,
+      "currentAssets": true
+    },
+    {
+      "url": "https://tools.fategenie.com/zh/html-entity",
+      "status": 200,
+      "canonical": true,
+      "currentAssets": true
+    },
+    {
+      "url": "https://tools.fategenie.com/zh/color",
+      "status": 200,
+      "canonical": true,
+      "currentAssets": true
+    },
+    {
+      "url": "https://tools.fategenie.com/zh/regex",
+      "status": 200,
+      "canonical": true,
+      "currentAssets": true
+    },
+    {
+      "url": "https://tools.fategenie.com/zh/hash",
+      "status": 200,
+      "canonical": true,
+      "currentAssets": true
+    },
+    {
+      "url": "https://tools.fategenie.com/zh/jwt",
+      "status": 200,
+      "canonical": true,
+      "currentAssets": true
+    },
+    {
+      "url": "https://tools.fategenie.com/zh/cidr",
+      "status": 200,
+      "canonical": true,
+      "currentAssets": true
+    },
+    {
+      "url": "https://tools.fategenie.com/zh/http-status",
+      "status": 200,
+      "canonical": true,
+      "currentAssets": true
+    },
+    {
+      "url": "https://tools.fategenie.com/zh/uuid",
+      "status": 200,
+      "canonical": true,
+      "currentAssets": true
+    },
+    {
+      "url": "https://tools.fategenie.com/zh/about",
+      "status": 200,
+      "canonical": true,
+      "currentAssets": true
+    },
+    {
+      "url": "https://tools.fategenie.com/zh/privacy",
+      "status": 200,
+      "canonical": true,
+      "currentAssets": true
+    }
+  ],
+  "assets": [
+    {
+      "url": "https://tools.fategenie.com/assets/app.dcf9e3cfe199.js",
+      "status": 200,
+      "sha256": "dcf9e3cfe1992a54165d7e14a2543a6662700a42239915795cec256cd3dc6736",
+      "matchesLocal": true
+    },
+    {
+      "url": "https://tools.fategenie.com/assets/i18n.cfd605e2d19b.js",
+      "status": 200,
+      "sha256": "cfd605e2d19b8a3a5f8d95e381d2666220962620df83cde949ea2e55380d59c7",
+      "matchesLocal": true
+    },
+    {
+      "url": "https://tools.fategenie.com/assets/json-tree.ba2cd5832688.js",
+      "status": 200,
+      "sha256": "ba2cd58326885f530c1d86a5e260c82673ee6725907464c947024931e1edd9d8",
+      "matchesLocal": true
+    },
+    {
+      "url": "https://tools.fategenie.com/assets/language.0a2a8cb37413.js",
+      "status": 200,
+      "sha256": "0a2a8cb374136838d4b8734432c0fb936f5b396da4d3fd84d9ad5568378f4773",
+      "matchesLocal": true
+    },
+    {
+      "url": "https://tools.fategenie.com/assets/style.c255780bed51.css",
+      "status": 200,
+      "sha256": "c255780bed51f83861c0555c16f39903b1a4bc6c878cb38c837a1f40627c5646",
+      "matchesLocal": true
+    },
+    {
+      "url": "https://tools.fategenie.com/assets/zh-CN.ff13e9612f76.js",
+      "status": 200,
+      "sha256": "ff13e9612f7622cf1d7fc3de362ae50bfee47396c7a6aa51c3a61e55a71c711e",
+      "matchesLocal": true
+    }
+  ],
+  "unknownPathStatus": 404,
+  "deploymentDashboard": "not inspected; production version verified using page asset references and exact artifact bytes"
+}

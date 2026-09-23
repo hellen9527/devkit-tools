@@ -19,4 +19,4 @@ To repeat the optional browser check: install/provide Playwright, build the site
 
 ## Scope
 
-Based on production commit 72cc1d8. Pending analytics work remains on devkit/analytics; it is not included in this release. A successful build or push alone is not live evidence; the production comparison will be recorded separately after deployment.
+Based on production commit 72cc1d8. Pending analytics work remains on devkit/analytics; it is not included in this release. Production commit cf140f2 is confirmed live: 34 pages returned 200 with correct canonical and current asset references; all 6 page-referenced assets match local bytes; an unknown URL returned 404. See json-tree-live-checks.json. The Cloudflare dashboard build ID was not inspected.
