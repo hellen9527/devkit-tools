@@ -16,7 +16,7 @@ test('build emits independent crawlable tool pages and only public assets',()=>{
   assert.equal((html.match(/id="view-/g)||[]).length,1);
   assert.equal((html.match(/<h1\b/g)||[]).length,1);
   assert.ok(html.includes('rel="canonical" href="https://tools.example.com/'+id+'"'));
-  assert.match(html,/<h2>How to use/); assert.match(html,/<h2>Example/);
+  assert.doesNotMatch(html,/class="tool-guide"|<h2>How to use|<h2>Example/);
   assert.match(html,/href="\/json"/);assert.doesNotMatch(html,/noindex|YOUR-DOMAIN/);
   titles.add(html.match(/<title>(.*?)<\/title>/)[1]);
   for(const m of html.matchAll(/(?:src|href)="(\/assets\/[^"?]+)"/g))assert.ok(fs.existsSync(path.join(outDir,m[1])));
@@ -57,7 +57,7 @@ test('both language trees have self canonicals, reciprocal alternatives and tran
    assert.equal((html.match(/<h1\b/g)||[]).length,1);
    if(locale==='zh-Hans'){
     assert.match(html,/href="\/zh\/json"/);assert.doesNotMatch(html,/>Copy<|>Convert<|>Input<|>Output /);
-    if(ids.includes(route)){assert.match(html,/<h2>使用方法<\/h2>/);assert.match(html,/<h2>示例<\/h2>/)}
+    if(ids.includes(route)){assert.doesNotMatch(html,/class="tool-guide"|<h2>使用方法<\/h2>|<h2>示例<\/h2>/)}
    }
   }
  }

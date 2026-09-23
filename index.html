@@ -135,8 +135,6 @@ button{font-family:inherit;cursor:pointer}
 .json-view-controls{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:10px}
 .json-view-controls .btn{font-size:12px;padding:7px 10px;min-height:36px}
 .json-view-controls [aria-pressed="true"]{color:var(--accent);border-color:var(--accent);background:var(--accent-dim)}
-.json-hint{font-size:12px;color:var(--muted);line-height:1.6;margin:8px 0 0}
-.json-pane-label{margin:0 0 10px;color:var(--muted);font-size:12px;min-height:36px;display:flex;align-items:center}
 #json-tree{width:100%;background:var(--panel3);border:1px solid var(--border);border-radius:6px;padding:12px;font-size:12.5px;line-height:1.65}
 .json-tree-children{margin-left:14px;padding-left:8px;border-left:1px solid var(--border)}
 .json-tree-row,.json-tree-summary{overflow-wrap:anywhere;word-break:break-word;padding:3px 0}
@@ -496,7 +494,7 @@ body{font-family:system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-seri
         <div class="two-col">
           <div class="card">
             <div class="card-title">Input</div>
-            <p class="json-pane-label">Paste JSON, then choose Format to explore it.</p>
+
             <textarea class="textarea mono" id="json-in" aria-label="JSON input" placeholder='Paste JSON here, e.g. {"name":"DevKit","tags":["dev","tools"]}' spellcheck="false"></textarea>
           </div>
           <div class="card">
@@ -508,7 +506,7 @@ body{font-family:system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-seri
             </div>
             <div id="json-tree" role="region" aria-label="JSON tree" tabindex="0" hidden></div>
             <pre class="pre empty" id="json-out">Format or validate to see output here.</pre>
-            <p class="json-hint">Click an object or array to expand it. Copy always includes the full JSON.</p>
+
           </div>
         </div>
         <div role="status" aria-live="polite" class="msg" id="json-msg"></div>
