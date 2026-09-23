@@ -10,7 +10,7 @@
     "note": "Supports lists, ranges, steps and month/weekday names. Sunday is 0 or 7. When both day fields are restricted, either may match. This is five-field cron: seconds, Quartz ?, L and # are not supported. The search covers up to eight years; daylight-saving changes affect local run times."
   },
   "json": {
-    "steps": ["Paste JSON or select Sample to start with an example.", "Choose Format for indentation, Minify to remove optional whitespace, or Validate to check syntax. Copy the result when ready."],
+    "steps": ["Paste JSON or load the sample, then choose Format. The root is expanded; nested objects and arrays start collapsed.", "Click an object or array to inspect its children. Large lists load in batches. First level only restores the overview; Text view shows the full output in a scrollable pane.", "Copy full JSON always copies the complete result, including collapsed items. Minify removes optional whitespace; Validate checks syntax."],
     "example": "Input: {\"id\":9007199254740993,\"active\":true}\nFormatted:\n{\n  \"id\": 9007199254740993,\n  \"active\": true\n}",
     "note": "Formatting preserves numeric text, key order and duplicate keys. JSON disallows comments and trailing commas. An error location is shown when the browser parser provides one. Preserving duplicate keys does not make their interpretation consistent across other applications."
   },

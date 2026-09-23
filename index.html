@@ -123,6 +123,33 @@ button{font-family:inherit;cursor:pointer}
 .scrim{display:none;position:fixed;inset:0;background:rgba(5,7,10,.6);z-index:30;backdrop-filter:blur(2px)}
 .content{flex:1;overflow-y:auto}
 
+
+/* JSON panes stay within the viewport; tree children are rendered on demand. */
+#view-json .two-col{align-items:start}
+#view-json .card{min-width:0}
+#view-json .card-title{min-height:38px}
+#json-in,#json-out,#json-tree{height:clamp(280px,52vh,540px);min-height:0;max-height:65vh;overflow:auto;overscroll-behavior:contain}
+#json-in{resize:none}
+#json-out,#json-tree{scrollbar-gutter:stable}
+#json-out[hidden],#json-tree[hidden]{display:none}
+.json-view-controls{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:10px}
+.json-view-controls .btn{font-size:12px;padding:7px 10px;min-height:36px}
+.json-view-controls [aria-pressed="true"]{color:var(--accent);border-color:var(--accent);background:var(--accent-dim)}
+.json-hint{font-size:12px;color:var(--muted);line-height:1.6;margin:8px 0 0}
+.json-pane-label{margin:0 0 10px;color:var(--muted);font-size:12px;min-height:36px;display:flex;align-items:center}
+#json-tree{width:100%;background:var(--panel3);border:1px solid var(--border);border-radius:6px;padding:12px;font-size:12.5px;line-height:1.65}
+.json-tree-children{margin-left:14px;padding-left:8px;border-left:1px solid var(--border)}
+.json-tree-row,.json-tree-summary{overflow-wrap:anywhere;word-break:break-word;padding:3px 0}
+.json-tree-summary{cursor:pointer;border-radius:3px;min-height:28px}
+.json-tree-summary:hover{background:var(--panel2)}
+.json-tree-summary:focus-visible,.json-tree-more:focus-visible,#json-tree:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+.json-tree-key,.json-tree-value{white-space:pre-wrap}
+.json-tree-key{color:var(--accent)}.json-tree-index,.json-tree-count{color:var(--muted)}
+.json-tree-string{color:var(--ok)}.json-tree-number{color:var(--tok-num)}.json-tree-boolean{color:var(--tok-bool)}.json-tree-null{color:var(--faint)}
+.json-tree-full-value{white-space:pre-wrap;overflow-wrap:anywhere;padding:8px;border-left:2px solid var(--border);max-height:220px;overflow:auto}
+.json-tree-more{font:inherit;color:var(--accent);background:var(--panel2);border:1px solid var(--border);border-radius:5px;padding:8px 10px;margin:6px 0;max-width:100%;white-space:normal;text-align:left;min-height:36px}
+@media(max-width:820px){#json-in{height:220px;max-height:35vh}#json-out,#json-tree{height:clamp(280px,55vh,500px);max-height:60vh}.json-tree-summary{min-height:34px}.json-tree-children{margin-left:8px;padding-left:6px}.json-view-controls .btn{min-height:40px}}
+
 /* ===================== Views ===================== */
 .view{display:none;padding:28px 32px 60px;max-width:1080px;margin:0 auto}
 .view.active{display:block;animation:fadeIn .18s ease}
@@ -469,11 +496,19 @@ body{font-family:system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-seri
         <div class="two-col">
           <div class="card">
             <div class="card-title">Input</div>
+            <p class="json-pane-label">Paste JSON, then choose Format to explore it.</p>
             <textarea class="textarea mono" id="json-in" aria-label="JSON input" placeholder='Paste JSON here, e.g. {"name":"DevKit","tags":["dev","tools"]}' spellcheck="false"></textarea>
           </div>
           <div class="card">
-            <div class="card-title">Output <button class="copy-mini" data-copy="json-out">Copy</button></div>
+            <div class="card-title">Output <button type="button" class="copy-mini" id="json-copy" data-copy="json-out" disabled>Copy full JSON</button></div>
+            <div class="json-view-controls" role="group" aria-label="JSON output view">
+              <button type="button" class="btn" id="json-tree-view" aria-pressed="true" disabled>Tree view</button>
+              <button type="button" class="btn" id="json-text-view" aria-pressed="false" disabled>Text view</button>
+              <button type="button" class="btn" id="json-first-level" disabled>First level only</button>
+            </div>
+            <div id="json-tree" role="region" aria-label="JSON tree" tabindex="0" hidden></div>
             <pre class="pre empty" id="json-out">Format or validate to see output here.</pre>
+            <p class="json-hint">Click an object or array to expand it. Copy always includes the full JSON.</p>
           </div>
         </div>
         <div role="status" aria-live="polite" class="msg" id="json-msg"></div>
@@ -773,6 +808,7 @@ body{font-family:system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-seri
   </main>
 </div><!-- /app -->
 
+<script src="assets/json-tree.js"></script>
 <script>
 "use strict";
 /* =====================================================================
@@ -1027,6 +1063,7 @@ async function copyText(text, btn){
   }
 }
 function copyFrom(id){
+  if(id==='json-out'){if(jsonOutputText)copyText(jsonOutputText,$('#json-copy'));return;}
   const el = document.getElementById(id);
   if(!el) return;
   const text = el.tagName==='TEXTAREA' || el.tagName==='INPUT' ? el.value : el.textContent;
@@ -1115,19 +1152,56 @@ function formatJSON(raw, pretty){
   });
   return out;
 }
+let jsonOutputText='', jsonTreeModel=null, jsonTreeView=null;
+function jsonClearOutput(){
+  jsonOutputText='';jsonTreeModel=null;jsonTreeView=null;
+  const out=$('#json-out'),tree=$('#json-tree');
+  out.innerHTML='';out.textContent='';out.className='pre empty';out.hidden=false;
+  tree.textContent='';tree.hidden=true;
+  for(const id of ['json-copy','json-tree-view','json-text-view','json-first-level'])$('#'+id).disabled=true;
+}
+function jsonSetView(view){
+  if(!jsonOutputText)return;
+  const out=$('#json-out'),tree=$('#json-tree');
+  const asTree=view==='tree' && !!window.DevKitJSONTree;
+  out.hidden=asTree;tree.hidden=!asTree;
+  $('#json-tree-view').setAttribute('aria-pressed',String(asTree));
+  $('#json-text-view').setAttribute('aria-pressed',String(!asTree));
+  $('#json-first-level').disabled=!asTree;
+  if(asTree){
+    if(!jsonTreeView)jsonTreeView=window.DevKitJSONTree.mount(tree,jsonTreeModel,tr);
+  }else{
+    out.className='pre';
+    // Very large text remains selectable without creating thousands of spans.
+    if(jsonOutputText.length>200000)out.textContent=jsonOutputText;
+    else out.innerHTML=highlightJSON(jsonOutputText);
+  }
+}
 function jsonAction(mode){
-  const raw=$('#json-in').value, out=$('#json-out');
-  if(!raw.trim()){ jsonMsg('err',tr('Input is empty.')); out.className='pre empty'; out.textContent=''; return; }
+  const raw=$('#json-in').value;
+  jsonClearOutput();
+  if(!raw.trim()){jsonMsg('err',tr('Input is empty.'));return;}
   try{
-    const text=formatJSON(raw,mode==='format');
-    out.className='pre'; out.innerHTML=highlightJSON(text);
+    jsonOutputText=formatJSON(raw,mode==='format');
+    if(window.DevKitJSONTree)jsonTreeModel=window.DevKitJSONTree.parse(raw);
+    $('#json-copy').disabled=false;
+    $('#json-tree-view').disabled=!window.DevKitJSONTree;
+    $('#json-text-view').disabled=false;
+    jsonSetView(mode==='format'?'tree':'text');
+    $('#json-out').scrollTop=0;$('#json-tree').scrollTop=0;
     jsonMsg('ok',tr('Valid JSON · {0}. Original numbers and keys preserved.',tr(mode==='format'?'formatted with 2-space indent':mode==='minify'?'minified':'validated')));
   }catch(e){
-    const info=jsonErrorInfo(raw,e);
-    out.className='pre empty'; out.textContent='';
+    const info=jsonErrorInfo(raw,e);jsonClearOutput();
     jsonMsg('err',escapeHtml(uiError(e,'json'))+(info ? '<br><span class="pos">'+tr('line {0}, column {1}',info.line,info.col)+'</span>' : ''));
   }
 }
+$('#json-tree-view')?.addEventListener('click',()=>jsonSetView('tree'));
+$('#json-text-view')?.addEventListener('click',()=>jsonSetView('text'));
+$('#json-first-level')?.addEventListener('click',()=>{jsonTreeView?.reset();$('#json-tree').scrollTop=0;});
+$('#json-in')?.addEventListener('input',()=>{
+  const hadOutput=!!jsonOutputText;jsonClearOutput();
+  if(hadOutput)jsonMsg('',tr('Input changed. Format again to refresh the result.'));
+});
 
 function jsonErrorInfo(raw, e){
   // extract position from V8 message like "at position 15"

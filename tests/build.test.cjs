@@ -75,3 +75,17 @@ test('static localization changes authored labels without touching code, sample 
  assert.equal(translated,'<label> 输入 </label><input value="Input" placeholder="输入" aria-label="输入"><textarea placeholder="输入">Input <b>Input</b></textarea><pre>Input</pre><code>Input</code><script>const s="Input";</script><svg><title>Input</title></svg><p>左右</p>');
  assert.equal(localizeMarkup("<textarea placeholder='Input' title='Input'>Input</textarea>",{Input:'输入'}),"<textarea placeholder='输入' title='输入'>Input</textarea>");
 });
+test('JSON tree assets load before app only on JSON pages and both languages expose inspection controls',()=>{
+ const outDir=temp();try{
+ buildSite({outDir,siteUrl:'https://tools.fategenie.com'});
+ for(const [prefix,label] of [['','First level only'],['zh/','仅看第一层']]){
+  const html=fs.readFileSync(path.join(outDir,prefix,'json/index.html'),'utf8');
+  const scripts=[...html.matchAll(/<script defer src="([^"]+)"/g)].map(m=>m[1]);
+  const tree=scripts.findIndex(s=>s.includes('json-tree.')),app=scripts.findIndex(s=>s.includes('app.'));
+  assert.ok(tree>=0&&tree<app);assert.equal(scripts.filter(s=>s.includes('json-tree.')).length,1);
+  assert.match(html,new RegExp(label));assert.match(html,/id="json-copy"[^>]*disabled/);
+  assert.ok(fs.existsSync(path.join(outDir,scripts[tree])));
+ }
+ assert.doesNotMatch(fs.readFileSync(path.join(outDir,'base64/index.html'),'utf8'),/src="[^"]*json-tree/);
+ }finally{fs.rmSync(outDir,{recursive:true,force:true})}
+});

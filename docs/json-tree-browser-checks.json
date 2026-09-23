@@ -1,0 +1,28 @@
+{
+  "date": "2026-09-23T09:16:53.361Z",
+  "environment": "isolated Chromium; local artifacts served through request interception; no external requests",
+  "results": [
+    {
+      "lang": "en",
+      "viewport": {
+        "width": 1280,
+        "height": 900
+      },
+      "rows": 20000,
+      "inputBytes": 1737874,
+      "formatAndFirstRenderMs": 130,
+      "checks": "significant literal whitespace, root overview, lazy expansion, batching, reset, full exact copy, text view, edited/invalid state, keyboard expansion, XSS, long string, minify, no JS errors"
+    },
+    {
+      "lang": "zh",
+      "viewport": {
+        "width": 390,
+        "height": 844
+      },
+      "rows": 20000,
+      "inputBytes": 1737874,
+      "formatAndFirstRenderMs": 107,
+      "checks": "significant literal whitespace, root overview, lazy expansion, batching, reset, full exact copy, text view, edited/invalid state, keyboard expansion, XSS, long string, minify, no JS errors"
+    }
+  ]
+}
