@@ -244,5 +244,11 @@
   "{0} items": "{0} 项",
   "{0} properties": "{0} 个属性",
   "Show next {0} ({1} remaining)": "再显示 {0} 项（剩余 {1} 项）",
-  "Show full value": "展开完整值"
+  "Show full value": "展开完整值",
+  "JSON actions": "JSON 操作",
+  "Paste JSON": "粘贴 JSON",
+  "Format (Ctrl/Cmd+Enter)": "格式化（Ctrl/Cmd+Enter）",
+  "Undo last format or minify": "撤销上次格式化或压缩",
+  "Undo": "撤销",
+  "Valid JSON": "有效 JSON"
 }

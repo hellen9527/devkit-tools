@@ -124,18 +124,29 @@ button{font-family:inherit;cursor:pointer}
 .content{flex:1;overflow-y:auto}
 
 
-/* JSON panes stay within the viewport; tree children are rendered on demand. */
-#view-json .two-col{align-items:start}
-#view-json .card{min-width:0}
-#view-json .card-title{min-height:38px}
-#json-in,#json-out,#json-tree{height:clamp(280px,52vh,540px);min-height:0;max-height:65vh;overflow:auto;overscroll-behavior:contain}
-#json-in{resize:none}
-#json-out,#json-tree{scrollbar-gutter:stable}
-#json-out[hidden],#json-tree[hidden]{display:none}
-.json-view-controls{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:10px}
-.json-view-controls .btn{font-size:12px;padding:7px 10px;min-height:36px}
+/* One document surface: editable text or a lazy tree, never split panes. */
+.app{height:100dvh}
+.main,.content{min-height:0}
+body:has(#view-json.active) .topbar{height:44px;padding:0 12px}
+body:has(#view-json.active) .privacy-chip{display:none}
+.content:has(#view-json.active){overflow:hidden}
+#view-json.active{display:flex;flex-direction:column;gap:8px;height:100%;min-height:0;max-width:none;padding:10px 12px;animation:none}
+#view-json>.tool-title{position:absolute;width:1px;height:1px;overflow:hidden;clip-path:inset(50%);white-space:nowrap;margin:0;padding:0}
+.json-toolbar{display:flex;align-items:center;gap:8px;flex-wrap:wrap;flex-shrink:0}
+.json-toolbar .btn{font-size:13px;min-height:34px;padding:6px 11px}
+.json-view-controls{display:flex;gap:0;flex-shrink:0}
+.json-view-controls .btn{border-radius:0}
+.json-view-controls .btn:first-child{border-radius:6px 0 0 6px}
+.json-view-controls .btn:last-child{border-radius:0 6px 6px 0;border-left:0}
 .json-view-controls [aria-pressed="true"]{color:var(--accent);border-color:var(--accent);background:var(--accent-dim)}
-#json-tree{width:100%;background:var(--panel3);border:1px solid var(--border);border-radius:6px;padding:12px;font-size:12.5px;line-height:1.65}
+.json-toolbar .json-spacer{flex:1}
+.json-workspace{display:flex;flex:1;min-height:0;min-width:0;border:1px solid var(--border);border-radius:8px;background:var(--panel3);overflow:hidden}
+#json-in,#json-tree{flex:1;width:100%;height:100%;min-height:0;max-height:none;border:0;border-radius:0;margin:0;padding:14px 16px;overflow:auto;overscroll-behavior:contain;scrollbar-gutter:stable;outline-offset:-3px}
+#json-in{resize:none;white-space:pre;overflow-wrap:normal;font-size:14px;tab-size:2}
+#json-in[hidden],#json-tree[hidden]{display:none}
+#json-tree{background:var(--panel3);font:14px/1.65 var(--mono)}
+#view-json .msg{flex-shrink:0;font-size:12px;line-height:20px;margin:0;padding:0 2px;max-height:60px;overflow:auto}
+#view-json .site-footer{flex-shrink:0;margin:0;padding:0;border:0;gap:14px;justify-content:flex-end;font-size:11px;line-height:18px}
 .json-tree-children{margin-left:14px;padding-left:8px;border-left:1px solid var(--border)}
 .json-tree-row,.json-tree-summary{overflow-wrap:anywhere;word-break:break-word;padding:3px 0}
 .json-tree-summary{cursor:pointer;border-radius:3px;min-height:28px}
@@ -146,7 +157,6 @@ button{font-family:inherit;cursor:pointer}
 .json-tree-string{color:var(--ok)}.json-tree-number{color:var(--tok-num)}.json-tree-boolean{color:var(--tok-bool)}.json-tree-null{color:var(--faint)}
 .json-tree-full-value{white-space:pre-wrap;overflow-wrap:anywhere;padding:8px;border-left:2px solid var(--border);max-height:220px;overflow:auto}
 .json-tree-more{font:inherit;color:var(--accent);background:var(--panel2);border:1px solid var(--border);border-radius:5px;padding:8px 10px;margin:6px 0;max-width:100%;white-space:normal;text-align:left;min-height:36px}
-@media(max-width:820px){#json-in{height:220px;max-height:35vh}#json-out,#json-tree{height:clamp(280px,55vh,500px);max-height:60vh}.json-tree-summary{min-height:34px}.json-tree-children{margin-left:8px;padding-left:6px}.json-view-controls .btn{min-height:40px}}
 
 /* ===================== Views ===================== */
 .view{display:none;padding:28px 32px 60px;max-width:1080px;margin:0 auto}
@@ -394,6 +404,33 @@ body{font-family:system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-seri
  .brand{padding:16px}.nav{padding-top:4px}.nav-item{padding:8px 10px}
 }
 
+/* Navigation opens over the document; it never squeezes the editor. */
+.menu-btn{display:flex;flex-shrink:0}
+.scrim.show{display:block}
+@media(min-width:769px){
+ .sidebar{position:fixed;left:0;top:0;width:56px;overflow:hidden;transition:width .16s ease}
+ .main{margin-left:56px}
+ .sidebar.expanded{width:268px;box-shadow:12px 0 32px #0006}
+ .sidebar .brand{padding:14px 10px}
+ .sidebar:not(.expanded) .brand-name{font-size:0;min-height:28px;justify-content:center}
+ .sidebar:not(.expanded) .brand-name::before{content:'{}';font-size:20px;color:var(--accent)}
+ .sidebar:not(.expanded) .brand-name .cursor,.sidebar:not(.expanded) .brand-tag,.sidebar:not(.expanded) .nav-group-label,.sidebar:not(.expanded) .sidebar-foot{display:none}
+ .sidebar:not(.expanded) .nav{padding:6px}
+ .sidebar:not(.expanded) .nav-item{padding:10px;gap:0;min-height:40px}
+ .sidebar:not(.expanded) .nav-item span{opacity:0;max-width:0;overflow:hidden;white-space:nowrap}
+ .sidebar.expanded .nav-item{white-space:nowrap}
+}
+@media(max-width:768px){
+ #view-json.active{padding:8px;gap:6px}
+ .json-toolbar{gap:6px}
+ .json-toolbar .btn{padding:5px 9px;font-size:12px;min-height:36px}
+ .json-toolbar .json-spacer{display:none}
+ #json-in{font-size:16px}
+ #json-in,#json-tree{padding:10px;min-height:0}
+ .json-tree-summary{min-height:34px}
+ .json-tree-children{margin-left:8px;padding-left:6px}
+}
+
 </style>
 </head>
 <body>
@@ -481,33 +518,24 @@ body{font-family:system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-seri
 
       <!-- ===================== JSON ===================== -->
       <section class="view" id="view-json">
-        <div class="tool-head"><span class="prompt">~ $ devkit:</span><span class="cmd">json-format</span><span class="cursor"></span></div>
         <h1 class="tool-title">JSON Formatter</h1>
-        <p class="tool-desc">Format, minify and validate JSON. Numbers and key order are preserved. Invalid input shows a syntax error.</p>
-        <div class="row">
-          <button class="btn primary" id="json-format">Format</button>
-          <button class="btn" id="json-minify">Minify</button>
-          <button class="btn" id="json-validate">Validate</button>
-          <span class="spacer"></span>
-          <button class="btn ghost" id="json-sample">Load sample</button>
+        <div class="json-toolbar" role="toolbar" aria-label="JSON actions">
+          <div class="json-view-controls" role="group" aria-label="JSON output view">
+            <button type="button" class="btn" id="json-text-view" aria-pressed="true">Text view</button>
+            <button type="button" class="btn" id="json-tree-view" aria-pressed="false" disabled>Tree view</button>
+          </div>
+          <button class="btn primary" id="json-format" title="Format (Ctrl/Cmd+Enter)" disabled>Format</button>
+          <button class="btn" id="json-minify" disabled>Minify</button>
+          <button class="btn" id="json-validate" disabled>Validate</button>
+          <span class="json-spacer"></span>
+          <button type="button" class="btn" id="json-first-level" disabled>First level only</button>
+          <button type="button" class="btn" id="json-undo" title="Undo last format or minify" disabled>Undo</button>
+          <button type="button" class="btn" id="json-copy" data-copy="json-out" disabled>Copy</button>
+          <button type="button" class="btn" id="json-clear" disabled>Clear</button>
         </div>
-        <div class="two-col">
-          <div class="card">
-            <div class="card-title">Input</div>
-
-            <textarea class="textarea mono" id="json-in" aria-label="JSON input" placeholder='Paste JSON here, e.g. {"name":"DevKit","tags":["dev","tools"]}' spellcheck="false"></textarea>
-          </div>
-          <div class="card">
-            <div class="card-title">Output <button type="button" class="copy-mini" id="json-copy" data-copy="json-out" disabled>Copy full JSON</button></div>
-            <div class="json-view-controls" role="group" aria-label="JSON output view">
-              <button type="button" class="btn" id="json-tree-view" aria-pressed="true" disabled>Tree view</button>
-              <button type="button" class="btn" id="json-text-view" aria-pressed="false" disabled>Text view</button>
-              <button type="button" class="btn" id="json-first-level" disabled>First level only</button>
-            </div>
-            <div id="json-tree" role="region" aria-label="JSON tree" tabindex="0" hidden></div>
-            <pre class="pre empty" id="json-out">Format or validate to see output here.</pre>
-
-          </div>
+        <div class="json-workspace">
+          <textarea class="textarea mono" id="json-in" aria-label="JSON input" placeholder="Paste JSON" spellcheck="false" wrap="off"></textarea>
+          <div id="json-tree" role="region" aria-label="JSON tree" tabindex="0" hidden></div>
         </div>
         <div role="status" aria-live="polite" class="msg" id="json-msg"></div>
       </section>
@@ -1014,20 +1042,34 @@ function route(){
 window.addEventListener('popstate', ()=>{if(!STATIC_PAGE) applyRoute(currentRoute());});
 window.addEventListener('hashchange', ()=>{if(!STATIC_PAGE && location.hash!=='#content') applyRoute(routeFromHash());});
 
-/* ---------- sidebar (mobile) ---------- */
+/* ---------- navigation rail / touch drawer ---------- */
 const sidebar=$('#sidebar'), scrim=$('#scrim');
-function openSidebar(){ sidebar.classList.add('open'); scrim.classList.add('show'); $('#menuBtn').setAttribute('aria-expanded','true'); sidebar.querySelector('a')?.focus(); }
-function closeSidebar(){ sidebar.classList.remove('open'); scrim.classList.remove('show'); $('#menuBtn').setAttribute('aria-expanded','false'); }
-$('#menuBtn')?.addEventListener('click', openSidebar);
-scrim.addEventListener('click', ()=>{closeSidebar();$('#menuBtn').focus();});
+let sidebarHover=false;
+function syncSidebar(){
+  const desktop=window.matchMedia?.('(min-width: 769px)')?.matches ?? true;
+  const expanded=!!sidebar.classList.contains?.('open') || (desktop && (sidebarHover || !!sidebar.contains?.(document.activeElement)));
+  sidebar.classList.toggle('expanded',expanded);
+  $('#menuBtn').setAttribute('aria-expanded',String(expanded));
+}
+function openSidebar(){sidebar.classList.add('open');scrim.classList.add('show');syncSidebar();sidebar.querySelector('a')?.focus();}
+function closeSidebar(){sidebarHover=false;sidebar.classList.remove('open','expanded');scrim.classList.remove('show');$('#menuBtn').setAttribute('aria-expanded','false');}
+$('#menuBtn')?.addEventListener('click',()=>{
+  if(sidebar.classList.contains('open'))closeSidebar();else openSidebar();
+});
+sidebar.addEventListener('mouseenter',()=>{sidebarHover=true;syncSidebar();});
+sidebar.addEventListener('mouseleave',()=>{sidebarHover=false;syncSidebar();});
+sidebar.addEventListener('focusin',syncSidebar);
+sidebar.addEventListener('focusout',()=>setTimeout(syncSidebar,0));
+window.addEventListener('resize',syncSidebar);
+scrim.addEventListener('click',()=>{closeSidebar();$('#menuBtn').focus();});
 document.addEventListener('keydown',e=>{
-  if(!sidebar.classList.contains('open')) return;
-  if(e.key==='Escape'){closeSidebar();$('#menuBtn').focus();}
-  if(e.key==='Tab'){
+  if(!sidebar.classList.contains('open')&&!sidebar.classList.contains('expanded'))return;
+  if(e.key==='Escape'){e.preventDefault();closeSidebar();$('#menuBtn').focus();}
+  if(e.key==='Tab'&&sidebar.classList.contains('open')){
     const links=Array.from(sidebar.querySelectorAll('a[href]'));
     const first=links[0],last=links[links.length-1];
-    if(e.shiftKey && document.activeElement===first){e.preventDefault();last.focus();}
-    else if(!e.shiftKey && document.activeElement===last){e.preventDefault();first.focus();}
+    if(e.shiftKey&&document.activeElement===first){e.preventDefault();last.focus();}
+    else if(!e.shiftKey&&document.activeElement===last){e.preventDefault();first.focus();}
   }
 });
 
@@ -1061,7 +1103,7 @@ async function copyText(text, btn){
   }
 }
 function copyFrom(id){
-  if(id==='json-out'){if(jsonOutputText)copyText(jsonOutputText,$('#json-copy'));return;}
+  if(id==='json-out'){const text=$('#json-in').value;if(text)copyText(text,$('#json-copy'));return;}
   const el = document.getElementById(id);
   if(!el) return;
   const text = el.tagName==='TEXTAREA' || el.tagName==='INPUT' ? el.value : el.textContent;
@@ -1150,56 +1192,64 @@ function formatJSON(raw, pretty){
   });
   return out;
 }
-let jsonOutputText='', jsonTreeModel=null, jsonTreeView=null;
-function jsonClearOutput(){
-  jsonOutputText='';jsonTreeModel=null;jsonTreeView=null;
-  const out=$('#json-out'),tree=$('#json-tree');
-  out.innerHTML='';out.textContent='';out.className='pre empty';out.hidden=false;
-  tree.textContent='';tree.hidden=true;
-  for(const id of ['json-copy','json-tree-view','json-text-view','json-first-level'])$('#'+id).disabled=true;
+let jsonOutputText='', jsonTreeModel=null, jsonTreeView=null, jsonView='text', jsonUndoText=null;
+function jsonSyncControls(){
+  const hasText=!!$('#json-in').value;
+  for(const id of ['json-copy','json-clear','json-format','json-minify','json-validate'])$('#'+id).disabled=!hasText;
+  $('#json-tree-view').disabled=!hasText||!window.DevKitJSONTree;
+  $('#json-first-level').disabled=jsonView!=='tree'||!jsonTreeModel;
+  $('#json-undo').disabled=jsonUndoText===null;
 }
-function jsonSetView(view){
-  if(!jsonOutputText)return;
-  const out=$('#json-out'),tree=$('#json-tree');
-  const asTree=view==='tree' && !!window.DevKitJSONTree;
-  out.hidden=asTree;tree.hidden=!asTree;
+function jsonInvalidate(){
+  jsonOutputText='';jsonTreeModel=null;jsonTreeView=null;$('#json-tree').textContent='';
+}
+function jsonShowView(view){
+  const editorHadFocus=document.activeElement===$('#json-in');
+  const asTree=view==='tree'&&!!window.DevKitJSONTree&&!!jsonTreeModel;
+  jsonView=asTree?'tree':'text';
+  $('#json-in').hidden=asTree;$('#json-tree').hidden=!asTree;
   $('#json-tree-view').setAttribute('aria-pressed',String(asTree));
   $('#json-text-view').setAttribute('aria-pressed',String(!asTree));
-  $('#json-first-level').disabled=!asTree;
-  if(asTree){
-    if(!jsonTreeView)jsonTreeView=window.DevKitJSONTree.mount(tree,jsonTreeModel,tr);
-  }else{
-    out.className='pre';
-    // Very large text remains selectable without creating thousands of spans.
-    if(jsonOutputText.length>200000)out.textContent=jsonOutputText;
-    else out.innerHTML=highlightJSON(jsonOutputText);
-  }
+  if(asTree&&!jsonTreeView)jsonTreeView=window.DevKitJSONTree.mount($('#json-tree'),jsonTreeModel,tr);
+  if(asTree&&editorHadFocus)$('#json-tree').focus?.();
+  jsonSyncControls();
+}
+function jsonSetView(view){
+  if(view==='text'){jsonShowView('text');return;}
+  if(jsonTreeModel&&jsonOutputText===$('#json-in').value)jsonShowView('tree');
+  else jsonAction('tree');
 }
 function jsonAction(mode){
-  const raw=$('#json-in').value;
-  jsonClearOutput();
-  if(!raw.trim()){jsonMsg('err',tr('Input is empty.'));return;}
+  const editor=$('#json-in'),raw=editor.value;
+  if(!raw.trim()){jsonInvalidate();jsonShowView('text');jsonMsg('err',tr('Input is empty.'));return;}
   try{
-    jsonOutputText=formatJSON(raw,mode==='format');
-    if(window.DevKitJSONTree)jsonTreeModel=window.DevKitJSONTree.parse(raw);
-    $('#json-copy').disabled=false;
-    $('#json-tree-view').disabled=!window.DevKitJSONTree;
-    $('#json-text-view').disabled=false;
-    jsonSetView(mode==='format'?'tree':'text');
-    $('#json-out').scrollTop=0;$('#json-tree').scrollTop=0;
-    jsonMsg('ok',tr('Valid JSON · {0}. Original numbers and keys preserved.',tr(mode==='format'?'formatted with 2-space indent':mode==='minify'?'minified':'validated')));
+    const text=mode==='format'||mode==='minify'?formatJSON(raw,mode==='format'):(jsonTokens(raw),raw);
+    const model=window.DevKitJSONTree?.parse(text);
+    // Commit only after validation; an error must never erase the draft.
+    if((mode==='format'||mode==='minify')&&text!==raw)jsonUndoText=raw;
+    editor.value=text;jsonOutputText=text;jsonTreeModel=model||null;
+    jsonTreeView=null;$('#json-tree').textContent='';
+    jsonShowView(mode==='format'||mode==='tree'?'tree':mode==='minify'?'text':jsonView);
+    editor.scrollTop=0;$('#json-tree').scrollTop=0;
+    jsonMsg('ok',tr('Valid JSON'));
   }catch(e){
-    const info=jsonErrorInfo(raw,e);jsonClearOutput();
-    jsonMsg('err',escapeHtml(uiError(e,'json'))+(info ? '<br><span class="pos">'+tr('line {0}, column {1}',info.line,info.col)+'</span>' : ''));
+    const info=jsonErrorInfo(raw,e);jsonInvalidate();jsonShowView('text');
+    jsonMsg('err',escapeHtml(uiError(e,'json'))+(info?' · '+tr('line {0}, column {1}',info.line,info.col):''));
   }
 }
 $('#json-tree-view')?.addEventListener('click',()=>jsonSetView('tree'));
-$('#json-text-view')?.addEventListener('click',()=>jsonSetView('text'));
+$('#json-text-view')?.addEventListener('click',()=>{jsonSetView('text');$('#json-in').focus?.();});
 $('#json-first-level')?.addEventListener('click',()=>{jsonTreeView?.reset();$('#json-tree').scrollTop=0;});
-$('#json-in')?.addEventListener('input',()=>{
-  const hadOutput=!!jsonOutputText;jsonClearOutput();
-  if(hadOutput)jsonMsg('',tr('Input changed. Format again to refresh the result.'));
+$('#json-in')?.addEventListener('input',()=>{jsonUndoText=null;jsonInvalidate();jsonShowView('text');jsonMsg('','');});
+$('#json-in')?.addEventListener('keydown',e=>{if(e.key==='Enter'&&(e.ctrlKey||e.metaKey)){e.preventDefault();jsonAction('format');}});
+$('#json-clear')?.addEventListener('click',()=>{
+  $('#json-in').value='';jsonUndoText=null;jsonInvalidate();jsonShowView('text');jsonMsg('','');$('#json-in').focus?.();
 });
+$('#json-undo')?.addEventListener('click',()=>{
+  if(jsonUndoText===null)return;
+  $('#json-in').value=jsonUndoText;jsonUndoText=null;jsonInvalidate();jsonShowView('text');jsonMsg('','');$('#json-in').focus?.();
+});
+if($('#json-in'))jsonSyncControls();
 
 function jsonErrorInfo(raw, e){
   // extract position from V8 message like "at position 15"
@@ -1225,17 +1275,6 @@ function highlightJSON(str){
 $('#json-format')?.addEventListener('click', ()=>jsonAction('format'));
 $('#json-minify')?.addEventListener('click', ()=>jsonAction('minify'));
 $('#json-validate')?.addEventListener('click', ()=>jsonAction('validate'));
-$('#json-sample')?.addEventListener('click', ()=>{
-  const sample = {
-    "name":"DevKit","version":"1.0.0","private":true,
-    "features":["timestamp","json","url","base64","hash","jwt","regex","uuid"],
-    "stats":{"tools":14,"runsInBrowser":true,"dataExits":false},
-    "author":{"name":"You","role":"developer"}
-  };
-  $('#json-in').value = JSON.stringify(sample,null,2);
-  jsonAction('format');
-});
-
 /* ===================== Tool: URL ===================== */
 function urlMsg(cls,html){ const m=$('#url-msg'); m.className='msg '+(cls||''); m.innerHTML=html; }
 function urlAction(act){

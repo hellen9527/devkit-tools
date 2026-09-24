@@ -65,7 +65,7 @@ test('both language trees have self canonicals, reciprocal alternatives and tran
  const sitemap=fs.readFileSync(path.join(outDir,'sitemap.xml'),'utf8');assert.equal((sitemap.match(/<loc>/g)||[]).length,34);
  assert.match(fs.readFileSync(path.join(outDir,'privacy/index.html'),'utf8'),/language preference/);
  assert.match(fs.readFileSync(path.join(outDir,'zh/privacy/index.html'),'utf8'),/语言偏好/);
- assert.match(fs.readFileSync(path.join(outDir,'zh/json/index.html'),'utf8'),/id="json-out">格式化或校验后/);
+ assert.match(fs.readFileSync(path.join(outDir,'zh/json/index.html'),'utf8'),/placeholder="粘贴 JSON"/);
  }finally{fs.rmSync(outDir,{recursive:true,force:true})}
 });
 test('static localization changes authored labels without touching code, sample inputs or values',()=>{

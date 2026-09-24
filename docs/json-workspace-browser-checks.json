@@ -1,0 +1,80 @@
+{
+  "date": "2026-09-24T01:44:52.577Z",
+  "environment": "isolated Chromium; local artifacts served through request interception; no external requests",
+  "results": [
+    {
+      "lang": "en",
+      "viewport": {
+        "width": 1280,
+        "height": 900
+      },
+      "editorBounds": {
+        "x": 69,
+        "y": 97,
+        "width": 1198,
+        "height": 740
+      },
+      "treeBounds": {
+        "x": 69,
+        "y": 97,
+        "width": 1198,
+        "height": 738
+      },
+      "rows": 20000,
+      "inputBytes": 1737874,
+      "formatAndFirstRenderMs": 514,
+      "checks": "single viewport-filling editor, draft copy, nonmutating validation/tree, editable roundtrip, format/minify undo, undo invalidation, invalid input retained, Ctrl/Cmd+Enter, clear, sidebar hover/focus/menu/Escape without shift, whitespace, 20000 rows, root overview, lazy expansion, batching, reset, lossless full copy, keyboard expansion, XSS, long string, Base64 navigation, no JS errors"
+    },
+    {
+      "lang": "zh",
+      "viewport": {
+        "width": 390,
+        "height": 844
+      },
+      "editorBounds": {
+        "x": 9,
+        "y": 137,
+        "width": 372,
+        "height": 650
+      },
+      "treeBounds": {
+        "x": 9,
+        "y": 137,
+        "width": 372,
+        "height": 648
+      },
+      "rows": 20000,
+      "inputBytes": 1737874,
+      "formatAndFirstRenderMs": 647,
+      "checks": "single viewport-filling editor, draft copy, nonmutating validation/tree, editable roundtrip, format/minify undo, undo invalidation, invalid input retained, Ctrl/Cmd+Enter, clear, sidebar hover/focus/menu/Escape without shift, whitespace, 20000 rows, root overview, lazy expansion, batching, reset, lossless full copy, keyboard expansion, XSS, long string, Base64 navigation, no JS errors"
+    },
+    {
+      "lang": "en",
+      "viewport": {
+        "width": 900,
+        "height": 700
+      },
+      "editorBounds": {
+        "x": 69,
+        "y": 97,
+        "width": 818,
+        "height": 540
+      },
+      "checks": "single surface fills viewport, no duplicate visible headings, no horizontal overflow, sidebar hover/focus/menu/Escape without editor shift"
+    },
+    {
+      "lang": "zh",
+      "viewport": {
+        "width": 844,
+        "height": 390
+      },
+      "editorBounds": {
+        "x": 69,
+        "y": 97,
+        "width": 762,
+        "height": 230
+      },
+      "checks": "single surface fills viewport, no duplicate visible headings, no horizontal overflow, sidebar hover/focus/menu/Escape without editor shift"
+    }
+  ]
+}

@@ -96,7 +96,6 @@ function buildSite({outDir=path.join(root,'dist'),siteUrl=process.env.SITE_URL||
   for(const t of tools){
    let section=sections.get(t.id).replace('class="view"','class="view active"').replace('</section>',footer+'</section>');
    if(chinese)section=section.replace(/(<h1 class="tool-title">)[^]*?(<\/h1>)/,(_,a,b)=>a+escape(t.name)+b).replace(/(<p class="tool-desc">)[^]*?(<\/p>)/,(_,a,b)=>a+escape(t.desc)+b);
-   if(chinese&&t.id==='json')section=section.replace(/(<pre class="pre empty" id="json-out">)([^<]*)(<\/pre>)/,(_,a,label,b)=>a+escape(zh.ui[label]||label)+b);
    if(t.id==='http-status'){
     const labels=chinese?['信息响应','成功响应','重定向','客户端错误','服务器错误']:['Informational','Successful','Redirection','Client Error','Server Error'];
     const list=labels.map((label,i)=>{
